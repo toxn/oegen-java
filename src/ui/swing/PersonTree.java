@@ -188,7 +188,10 @@ extends PersonRelationalGraphic
 		insets.top + 2 * margin + maxVerticalBoxesNumber * boxHeight + (maxVerticalBoxesNumber - 1) * boxSpace
 		+ insets.bottom));
 
+	// Forces parent ScrollPane to lay out its scrollbars
 	revalidate();
+
+	// Repaints PersonTree even if it's size is smaller than before
 	repaint();
     }
 
