@@ -22,12 +22,36 @@ public abstract class PersonRelationalGraphic extends PersonRelationalComponent{
 
 
     private Orientation orientation;
+    private int generations = 4;
+
+    /**
+     * @return le generations
+     */
+    public int getGenerations() {
+	return generations;
+    }
 
     /**
      * @return le orientation
      */
     public Orientation getOrientation() {
 	return orientation;
+    }
+
+    /**
+     * @param generations
+     *            le generations à définir
+     * @throws Exception
+     *             Generation number is inferior to 1.
+     */
+    public void setGenerations(int newGenerations) throws Exception {
+	if (generations != newGenerations) {
+	    if (newGenerations < 1)
+		throw new Exception("Generations should be >= 1.");
+
+	    generations = newGenerations;
+	    rebuild();
+	}
     }
 
     /**

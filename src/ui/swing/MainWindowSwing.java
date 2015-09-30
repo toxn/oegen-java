@@ -27,7 +27,7 @@ import data.Person;
  * @author toxn
  *
  */
-public final class MainWindow extends ui.MainWindow {
+public final class MainWindowSwing extends ui.MainWindow {
     /**
      *
      */
@@ -36,7 +36,7 @@ public final class MainWindow extends ui.MainWindow {
     /**
      * @throws HeadlessException
      */
-    public MainWindow() throws HeadlessException {
+    public MainWindowSwing() throws HeadlessException {
 	super();
 
 	/**
@@ -100,11 +100,11 @@ public final class MainWindow extends ui.MainWindow {
 
 	// personRelationsButtons.add(Box.createHorizontalStrut(20));
 
-	JButton personRelationsZoomInButton = new JButton("-");
-	personRelationsZoomInButton.setEnabled(false);
+	final JButton personRelationsZoomInButton = new JButton("+");
+	personRelationsZoomInButton.setEnabled(true);
 	personRelationsButtons.add(personRelationsZoomInButton, Box.RIGHT_ALIGNMENT);
 
-	JButton personRelationsZoomOutButton = new JButton("+");
+	final JButton personRelationsZoomOutButton = new JButton("-");
 	personRelationsZoomOutButton.setEnabled(true);
 	personRelationsButtons.add(personRelationsZoomOutButton, Box.RIGHT_ALIGNMENT);
 
@@ -121,10 +121,9 @@ public final class MainWindow extends ui.MainWindow {
 	JScrollPane personSummaryScrollPane = new JScrollPane(personSummary);
 
 	final PersonTree personTree = new PersonTree();
-	JScrollPane personTreeScrollPane = new JScrollPane(personTree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-		JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+	JScrollPane personTreeScrollPane = new JScrollPane(personTree);
 
-	JComponent personWheel = new JPanel(); // TODO implement a custom
+	final JComponent personWheel = new JPanel(); // TODO implement a custom
 	// component
 	JScrollPane personWheelScrollPane = new JScrollPane(personWheel);
 
@@ -176,6 +175,39 @@ public final class MainWindow extends ui.MainWindow {
 		personRelationsWheelButton.setEnabled(false);
 
 		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, "WHEEL");
+
+	    }
+	});
+	personRelationsZoomInButton.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		try {
+		    personTree.setGenerations(personTree.getGenerations() + 1);
+		    // personWheel.setGenerations(personWheel.getGenerations() +
+		    // 1);
+		    personRelationsZoomOutButton.setEnabled(true);
+		} catch (Exception ex) {
+		    throw new RuntimeException();
+		}
+	    }
+	});
+
+	personRelationsZoomOutButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		try {
+		    int newZoomLevel = personTree.getGenerations() - 1;
+
+		    if (newZoomLevel == 1) {
+			personRelationsZoomOutButton.setEnabled(false);
+		    }
+
+		    personTree.setGenerations(newZoomLevel);
+		    // personWheel.setGenerations(newZoomLevel);
+		} catch (Exception ex) {
+		    throw new RuntimeException();
+		}
 
 	    }
 	});
@@ -240,11 +272,9 @@ public final class MainWindow extends ui.MainWindow {
 	});
 
 	nextPersonViewBtn.addActionListener(new ActionListener() {
-
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		((CardLayout) personViewPanel.getLayout()).next(personViewPanel);
-
 	    }
 	});
 
