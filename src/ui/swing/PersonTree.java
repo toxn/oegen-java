@@ -39,7 +39,7 @@ extends PersonRelationalGraphic
     private final Hashtable<Person, PersonTreeData> personDict = new Hashtable<Person, PersonTreeData>();
     private final int boxWidth = 180;
     private final int boxHeight = 40;
-    private final int boxSpace = 13;
+    private final int boxSpace = 20;
     private final int boxStrokeWidth = 2;
     private final int lineWidth = 1;
     private final int fontSize = 8;
@@ -216,7 +216,7 @@ extends PersonRelationalGraphic
 	g2d.drawRect(x, y, boxWidth, boxHeight);
 	g2d.setFont(getFont().deriveFont(fontSize));
 	g2d.drawString(
-		person.getLastName() + ", " + person.getFirstName() + " (" + personDict.get(person).dWeight + ")",
+		person.getLastName() + ", " + person.getFirstName(),
 		x + boxMargin + boxStrokeWidth,
 		y + fontSize + boxMargin + boxStrokeWidth);
 
@@ -227,6 +227,9 @@ extends PersonRelationalGraphic
 
     private void drawDescendantsLeftToRight(Person person, int generations, Graphics2D g2d, int x, int y) {
 	if (person == null || generations == 0 || g2d == null)
+	    return;
+
+	if (personDict.get(person).descendants.size() == 0)
 	    return;
 
 	// Change graphic context
@@ -244,23 +247,38 @@ extends PersonRelationalGraphic
 	g2d.drawLine(x1, y, x2, y);
 
 	int dWeight = personDict.get(person).dWeight;
-	int vOffset = (dWeight - 1) * (boxHeight + boxSpace) / 2;
-	int y1 = y - vOffset;
-	int y2 = y + vOffset;
+	int vOffset = dWeight * (boxHeight + boxSpace) / 2;
+	int v1Offset;
+	int v2Offset;
+
+	if(dWeight==1) {
+	    v1Offset = v2Offset = vOffset;
+	}
+	else {
+	    v1Offset = (dWeight - personDict.get(personDict.get(person).descendants.firstElement()).dWeight)
+		    * (boxHeight + boxSpace) / 2;
+	    v2Offset = (dWeight - personDict.get(personDict.get(person).descendants.lastElement()).dWeight)
+		    * (boxHeight + boxSpace)
+		    / 2;
+	}
+	int y1 = y - v1Offset;
+	int y2 = y + v2Offset;
 
 	g2d.drawLine(x2, y1, x2, y2);
 
 	x1 = x2 - boxSpace / 2;
 	int x3 = x1 - boxWidth;
+	y1 = y1 + v1Offset - vOffset;
 
 	for (Person descendant : personDict.get(person).descendants) {
+	    y1 += personDict.get(descendant).dWeight * (boxHeight + boxSpace) / 2;
 	    g2d.drawLine(x1, y1, x2, y1);
 
 	    y2 = y1 - boxHeight / 2;
 	    drawBox(descendant, g2d, x3, y2);
 	    drawDescendantsLeftToRight(descendant, generations - 1, g2d, x3, y2);
 
-	    y1 += personDict.get(descendant).dWeight * (boxHeight + boxSpace);
+	    y1 += personDict.get(descendant).dWeight * (boxHeight + boxSpace) / 2;
 	}
 
 	// Restore graphic context
