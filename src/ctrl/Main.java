@@ -62,6 +62,12 @@ public final class Main
 	grandma.setFather(oldpa2);
 	grandma.setMother(oldma2);
 
+	Person ara = new Person();
+	ara.setFirstName("Ara");
+	ara.setLastName("Oiseau");
+	ara.setFather(grandpa);
+	ara.setMother(grandma);
+
 	Person grandpa2 = new Person();
 	grandpa2.setFirstName("Grand'pa");
 	grandpa2.setLastName("Geai");
