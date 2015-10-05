@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<xs:schema
+   xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.nubean.com/schemas/schema.xsd" > 
+  
+  <xs:complexType name="oebject" abstract="true">
+  	<xs:sequence>
+	   	<xs:element name="comment" minOccurs="0">
+	    	<xs:complexType>
+	     		<xs:sequence>
+	      			<xs:any namespace="http://www.w3.org/1999/xhtml"
+	           			minOccurs="1" maxOccurs="unbounded"
+	           			processContents="skip"/>
+	     		</xs:sequence> 
+	    	</xs:complexType>	
+	    </xs:element>	
+  	</xs:sequence>
+	<xs:attribute name="id" type="xs:ID" />
+	<xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+  	
+  <xs:complexType name="source">
+  	<xs:complexContent>
+  		<xs:extension base="oebject">
+  			<xs:sequence>
+  				<xs:element name="transcription" minOccurs="0">
+  				</xs:element>
+  				<xs:element name="source" type="source" minOccurs="0" maxOccurs="unbounded" />
+  				<xs:element name="name" type="name" minOccurs="0" maxOccurs="unbounded" /> 				
+  			</xs:sequence>
+  		</xs:extension>
+  	</xs:complexContent>
+  </xs:complexType>
+  	
+  <xs:complexType name="name">
+	<xs:complexContent>
+		<xs:extension base="reference">
+			<xs:sequence>
+				<xs:element name="text" type="xs:string" />
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+  </xs:complexType> 
+  	
+  <xs:complexType name="reference" abstract="true">
+  	<xs:complexContent>
+  		<xs:extension base="oebject">
+  		</xs:extension>
+  	</xs:complexContent>
+  </xs:complexType>
+  
+   <xs:complexType name="customType">
+    	<xs:complexContent>
+  		<xs:extension base="oebject">
+		  	<xs:sequence>
+		  		<xs:element name="text" type="xs:string" />
+		  	</xs:sequence>
+  		</xs:extension>
+  	</xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="database">
+  	<xs:sequence>
+  		<xs:element name="nametype" type="customType" minOccurs="0" maxOccurs="unbounded" />
+  		<xs:element name="occupationtype" type="customType" minOccurs="0" maxOccurs="unbounded" />
+  		<xs:element name="source" type="source" minOccurs="0" maxOccurs="unbounded" />
+  	</xs:sequence>
+  </xs:complexType>
+  
+  	<xs:element name="database" type="database">
+	</xs:element>
+</xs:schema>
