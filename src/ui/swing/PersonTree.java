@@ -10,8 +10,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Stroke;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.swing.border.Border;
 
@@ -23,12 +25,12 @@ import data.Person;
  */
 public final class PersonTree
 extends PersonRelationalGraphic
+implements Printable
 {
     private class PersonTreeData {
 	public int maxDGen = -1;
 	public int maxAGen = -1;
 	public int dWeight = -1;
-	Vector<Person> descendants = new Vector<Person>();
     }
 
     /**
@@ -36,19 +38,46 @@ extends PersonRelationalGraphic
      */
     private static final long serialVersionUID = 1L;
 
+    // TODO: intergrate that in class Person
     private final Hashtable<Person, PersonTreeData> personDict = new Hashtable<Person, PersonTreeData>();
-    private final int boxWidth = 180;
-    private final int boxHeight = 40;
-    private final int boxSpace = 20;
-    private final int boxStrokeWidth = 2;
-    private final int lineWidth = 1;
-    private final int fontSize = 8;
-    private final int boxMargin = 2;
+    /**
+     * Default width of a person box (pixels)
+     */
+    private int defBoxWidth = 180;
 
-    private final int margin = 5;
+    /**
+     * Default height of a person box (pixels)
+     */
+    private int defBoxHeight = 40;
 
-    private final BasicStroke boxStroke = new BasicStroke(boxStrokeWidth);
-    private final BasicStroke lineStroke = new BasicStroke(lineWidth);
+    /**
+     * Default spacing between boxes (pixels)
+     */
+    private int defBoxSpace = 20;
+    private int defMariageSpace = defBoxSpace;
+
+    /**
+     * Default box rectangle width (pixels)
+     */
+    private final int defBoxStrokeWidth = 2;
+
+    /**
+     * Default width of line connecting boxes (pixels)
+     */
+    private final int defLineWidth = 1;
+
+    /**
+     * Default margins inside boxes (pixels)
+     */
+    private final int defBoxMargin = 1;
+
+    /**
+     * Default margins around the whole graphic
+     */
+    private final int defMargin = 5;
+
+    private final BasicStroke boxStroke = new BasicStroke(defBoxStrokeWidth);
+    private final BasicStroke lineStroke = new BasicStroke(defLineWidth);
 
     /**
      * Number of descendant generations to display
@@ -68,13 +97,13 @@ extends PersonRelationalGraphic
     private int calcDWeight(Person person) {
 	PersonTreeData ptd = personDict.get(person);
 
-	if (ptd.descendants.size() == 0) {
+	if (person.children.size() == 0) {
 	    ptd.dWeight = 1;
 	    return ptd.dWeight;
 	}
 
 	int dWeight = 0;
-	for (Person descendant : ptd.descendants) {
+	for (Person descendant : person.children) {
 	    dWeight += calcDWeight(descendant);
 	}
 
@@ -117,7 +146,7 @@ extends PersonRelationalGraphic
 
 	int count = 0;
 
-	for (Person descendant : Person.Persons) {
+	for (Person descendant : Person.persons) {
 	    if(descendant.getFather() == person || descendant.getMother() == person) {
 		int countDesc = countDescdendant(descendant, maxDGen - 1);
 
@@ -131,7 +160,7 @@ extends PersonRelationalGraphic
     private int countDescGen(Person p) {
 	int count = 0;
 
-	for(Person descendant : personDict.get(p).descendants) {
+	for (Person descendant : p.children) {
 	    int countd = countDescGen(descendant)+1;
 
 	    if(countd > count) {
@@ -161,16 +190,16 @@ extends PersonRelationalGraphic
 
 	/* FIXME overflows if generations > 30 or 62 */
 	int maxVertBoxesPerAncestor = generations == 1 ? 1 : 2 << generations - 2;
-	int x1 = x + boxWidth;
-	int y1 = y + boxHeight / 2;
-	int x2 = x1 + boxSpace / 2;
+	int x1 = x + defBoxWidth;
+	int y1 = y + defBoxHeight / 2;
+	int x2 = x1 + defBoxSpace / 2;
 	int y2 = y1;
 
 	g2d.drawLine(x1, y1, x2, y2);
 
 	x1 = x2;
-	x2 += boxSpace / 2;
-	int vertOffset = maxVertBoxesPerAncestor * (boxHeight + boxSpace) / 2;
+	x2 += defBoxSpace / 2;
+	int vertOffset = maxVertBoxesPerAncestor * (defBoxHeight + defMariageSpace) / 2;
 	y1 = y1 - vertOffset;
 
 	if (father != null) {
@@ -179,8 +208,8 @@ extends PersonRelationalGraphic
 	    g2d.drawLine(x1, y1, x2, y1);
 
 	    // Draw the father's box
-	    drawBox(father, g2d, x2, y1 - boxHeight / 2);
-	    drawAncestorsLeftToRight(father, generations - 1, g2d, x2, y1 - boxHeight / 2);
+	    drawBox(father, g2d, x2, y1 - defBoxHeight / 2);
+	    drawAncestorsLeftToRight(father, generations - 1, g2d, x2, y1 - defBoxHeight / 2);
 	}
 
 	y1 = y2;
@@ -192,8 +221,8 @@ extends PersonRelationalGraphic
 	    g2d.drawLine(x1, y2, x2, y2);
 
 	    // Draw the mother's box
-	    drawBox(mother, g2d, x2, y2 - boxHeight / 2);
-	    drawAncestorsLeftToRight(mother, generations - 1, g2d, x2, y2 - boxHeight / 2);
+	    drawBox(mother, g2d, x2, y2 - defBoxHeight / 2);
+	    drawAncestorsLeftToRight(mother, generations - 1, g2d, x2, y2 - defBoxHeight / 2);
 	}
 
 	// Restore graphic context
@@ -211,14 +240,12 @@ extends PersonRelationalGraphic
 
 	g2d.setStroke(boxStroke);
 	g2d.setColor(Color.white);
-	g2d.fillRect(x, y, boxWidth, boxHeight);
+	g2d.fillRect(x, y, defBoxWidth, defBoxHeight);
 	g2d.setColor(Color.black);
-	g2d.drawRect(x, y, boxWidth, boxHeight);
-	g2d.setFont(getFont().deriveFont(fontSize));
-	g2d.drawString(
-		person.getLastName() + ", " + person.getFirstName(),
-		x + boxMargin + boxStrokeWidth,
-		y + fontSize + boxMargin + boxStrokeWidth);
+	g2d.drawRect(x, y, defBoxWidth, defBoxHeight);
+	g2d.drawString(person.getLastName() + " " + person.getFirstName(),
+		x + defBoxMargin + defBoxStrokeWidth,
+		y + (int) g2d.getFontMetrics().getMaxCharBounds(g2d).getHeight() + defBoxMargin + defBoxStrokeWidth);
 
 	// Restore graphic context
 	g2d.setStroke(oldStroke);
@@ -229,7 +256,7 @@ extends PersonRelationalGraphic
 	if (person == null || generations == 0 || g2d == null)
 	    return;
 
-	if (personDict.get(person).descendants.size() == 0)
+	if (person.children.size() == 0)
 	    return;
 
 	// Change graphic context
@@ -239,15 +266,15 @@ extends PersonRelationalGraphic
 	g2d.setStroke(lineStroke);
 	g2d.setColor(Color.black);
 
-	y += boxHeight / 2;
+	y += defBoxHeight / 2;
 
 	int x1 = x;
-	int x2 = x - boxSpace / 2;
+	int x2 = x - defBoxSpace / 2;
 
 	g2d.drawLine(x1, y, x2, y);
 
 	int dWeight = personDict.get(person).dWeight;
-	int vOffset = dWeight * (boxHeight + boxSpace) / 2;
+	int vOffset = dWeight * (defBoxHeight + defBoxSpace) / 2;
 	int v1Offset;
 	int v2Offset;
 
@@ -255,10 +282,10 @@ extends PersonRelationalGraphic
 	    v1Offset = v2Offset = vOffset;
 	}
 	else {
-	    v1Offset = (dWeight - personDict.get(personDict.get(person).descendants.firstElement()).dWeight)
-		    * (boxHeight + boxSpace) / 2;
-	    v2Offset = (dWeight - personDict.get(personDict.get(person).descendants.lastElement()).dWeight)
-		    * (boxHeight + boxSpace)
+	    v1Offset = (dWeight - personDict.get(person.children.firstElement()).dWeight)
+		    * (defBoxHeight + defBoxSpace) / 2;
+	    v2Offset = (dWeight - personDict.get(person.children.lastElement()).dWeight)
+		    * (defBoxHeight + defBoxSpace)
 		    / 2;
 	}
 	int y1 = y - v1Offset;
@@ -266,19 +293,19 @@ extends PersonRelationalGraphic
 
 	g2d.drawLine(x2, y1, x2, y2);
 
-	x1 = x2 - boxSpace / 2;
-	int x3 = x1 - boxWidth;
+	x1 = x2 - defBoxSpace / 2;
+	int x3 = x1 - defBoxWidth;
 	y1 = y1 + v1Offset - vOffset;
 
-	for (Person descendant : personDict.get(person).descendants) {
-	    y1 += personDict.get(descendant).dWeight * (boxHeight + boxSpace) / 2;
+	for (Person descendant : person.children) {
+	    y1 += personDict.get(descendant).dWeight * (defBoxHeight + defBoxSpace) / 2;
 	    g2d.drawLine(x1, y1, x2, y1);
 
-	    y2 = y1 - boxHeight / 2;
+	    y2 = y1 - defBoxHeight / 2;
 	    drawBox(descendant, g2d, x3, y2);
 	    drawDescendantsLeftToRight(descendant, generations - 1, g2d, x3, y2);
 
-	    y1 += personDict.get(descendant).dWeight * (boxHeight + boxSpace) / 2;
+	    y1 += personDict.get(descendant).dWeight * (defBoxHeight + defBoxSpace) / 2;
 	}
 
 	// Restore graphic context
@@ -301,8 +328,8 @@ extends PersonRelationalGraphic
 		    insets = border.getBorderInsets(this);
 		}
 
-		int startx = insets.left + margin + genDesc * (boxWidth + boxSpace);
-		int starty = insets.top + (getHeight() - insets.top - insets.bottom - boxHeight) / 2;
+		int startx = insets.left + defMargin + genDesc * (defBoxWidth + defBoxSpace);
+		int starty = insets.top + (getHeight() - insets.top - insets.bottom - defBoxHeight) / 2;
 
 		drawBox(getCenter(), g2d, startx, starty);
 		drawAncestorsLeftToRight(getCenter(), genAsc - 1, g2d, startx, starty);
@@ -337,27 +364,42 @@ extends PersonRelationalGraphic
     }
 
     @Override
+    public int print(Graphics g, PageFormat pf, int page) throws PrinterException {
+	if (page > 0)
+	    return Printable.NO_SUCH_PAGE;
+
+	Graphics2D g2d = (Graphics2D)g;
+	g2d.translate(pf.getImageableX(), pf.getImageableY());
+	g2d.scale(pf.getWidth() / getWidth(), pf.getHeight() / getHeight());
+
+	drawLeftToRight(g2d);
+
+	return Printable.PAGE_EXISTS;
+    }
+
+    @Override
     protected void rebuild() {
+	defBoxWidth = (int) getFontMetrics(getFont()).getMaxCharBounds(getGraphics()).getWidth() * 10
+		+ 2 * defBoxMargin;
+	defBoxHeight = getFontMetrics(getFont()).getHeight() * 4 + 3 * defBoxMargin + defLineWidth;
+
+	defMariageSpace = (int) getFontMetrics(getFont()).getMaxCharBounds(getGraphics()).getWidth() + 2 * defBoxMargin;
+	defBoxSpace = defMariageSpace / 2;
+
 	// First let's populate the person data dictionary
 	personDict.clear();
 
-	for (Person p : Person.Persons) {
+	for (Person p : Person.persons) {
 	    PersonTreeData ptd = new PersonTreeData();
 	    personDict.put(p, ptd);
-
-	    ptd.maxAGen = countAscGen(p);
-
-	    for (Person p2 : Person.Persons) {
-		if (p2.getFather() == p || p2.getMother() == p) {
-		    ptd.descendants.add(p2);
-		}
-	    }
 	}
 
-	for (Person p : personDict.keySet()) {
-	    personDict.get(p).maxDGen = countDescGen(p);
-
+	for (Person p : Person.persons) {
 	    PersonTreeData ptd = personDict.get(p);
+	    ptd.maxAGen = countAscGen(p);
+
+	    ptd.maxDGen = countDescGen(p);
+
 	    if (ptd.dWeight == -1) {
 		ptd.dWeight = calcDWeight(p);
 	    }
@@ -391,9 +433,9 @@ extends PersonRelationalGraphic
 	}
 
 	setPreferredSize(new Dimension(
-		insets.left + 2 * margin + (genAsc + genDesc) * boxWidth + (genAsc + genDesc - 1) * boxSpace
+		insets.left + 2 * defMargin + (genAsc + genDesc) * defBoxWidth + (genAsc + genDesc - 1) * defBoxSpace
 		+ insets.right,
-		insets.top + 2 * margin + maxBox * boxHeight + (maxBox - 1) * boxSpace + insets.bottom));
+		insets.top + 2 * defMargin + maxBox * defBoxHeight + (maxBox - 1) * defBoxSpace + insets.bottom));
 
 	// Forces parent ScrollPane to lay out its scrollbars
 	revalidate();

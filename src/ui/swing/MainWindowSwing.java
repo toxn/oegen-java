@@ -8,6 +8,8 @@ import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -40,7 +42,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 	super();
 
 	/**
-	 * Contains a list of Persons along with a toolbar to create, delete or
+	 * Contains a list of persons along with a toolbar to create, delete or
 	 * filter
 	 */
 	Box personListCard = Box.createVerticalBox();
@@ -58,7 +60,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 
 	personListCard.add(personListButtons);
 
-	final JList<Person> personList = new JList<Person>(Person.Persons);
+	final JList<Person> personList = new JList<Person>(Person.persons);
 	personList.setCellRenderer(new ListCellRenderer<Person>() {
 
 	    @Override
@@ -115,6 +117,10 @@ public final class MainWindowSwing extends ui.MainWindow {
 	JButton personRelationsRotateRightButton = new JButton("/->");
 	personRelationsRotateRightButton.setEnabled(true);
 	personRelationsButtons.add(personRelationsRotateRightButton, Box.RIGHT_ALIGNMENT);
+
+	JButton personRelationsPrintButton = new JButton("Print");
+	personRelationsPrintButton.setEnabled(true);
+	personRelationsButtons.add(personRelationsPrintButton);
 
 	JComponent personSummary = new JPanel(); // TODO: implement custom
 	// component
@@ -288,6 +294,24 @@ public final class MainWindowSwing extends ui.MainWindow {
 		remPersonBtn.setEnabled(bSelectionExists);
 
 		personTree.setCenter(personList.getSelectedValue());
+	    }
+	});
+
+	personRelationsPrintButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		PrinterJob pJob = PrinterJob.getPrinterJob();
+		pJob.setPrintable(personTree);
+		boolean doPrint = pJob.printDialog();
+
+		if (doPrint) {
+		    try {
+			pJob.print();
+		    } catch (PrinterException ex) {
+			System.err.println(ex);
+		    }
+		}
 	    }
 	});
     }

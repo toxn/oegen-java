@@ -20,7 +20,8 @@ public class Person
 	Other
     }
 
-    public static PersonListModel Persons = new PersonListModel();
+    public static PersonListModel persons = new PersonListModel();
+    public PersonListModel children = new PersonListModel();
 
     private Gender gender = Gender.Unknown;
 
@@ -34,7 +35,7 @@ public class Person
 
     public Person() {
 	super();
-	Persons.addElement(this);
+	persons.addElement(this);
     }
 
     /**
@@ -79,9 +80,9 @@ public class Person
 
     public void Remove()
     {
-	Persons.removeElement(this);
+	persons.removeElement(this);
 
-	// dereference without triggering stateChanged in Persons
+	// dereference without triggering stateChanged in persons
 	firstName = null;
 	lastName = null;
 	father = null;
@@ -93,8 +94,19 @@ public class Person
      */
     public void setFather(Person father)
     {
+	if (this.father == father)
+	    return;
+
+	if (this.father != null) {
+	    this.father.children.removeElement(this);
+	}
+
 	this.father = father;
-	Persons.stateChanged(new ChangeEvent(this));
+
+	this.father.children.addElement(this);
+
+	this.father.children.stateChanged(new ChangeEvent(this));
+	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
@@ -103,7 +115,7 @@ public class Person
     public void setFirstName(String firstName)
     {
 	this.firstName = firstName;
-	Persons.stateChanged(new ChangeEvent(this));
+	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
@@ -112,7 +124,7 @@ public class Person
     public void setGender(Gender gender)
     {
 	this.gender = gender;
-	Persons.stateChanged(new ChangeEvent(this));
+	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
@@ -121,7 +133,7 @@ public class Person
     public void setLastName(String lastName)
     {
 	this.lastName = lastName;
-	Persons.stateChanged(new ChangeEvent(this));
+	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
@@ -129,8 +141,19 @@ public class Person
      */
     public void setMother(Person mother)
     {
+	if (this.mother == mother)
+	    return;
+
+	if (this.mother != null) {
+	    this.mother.children.removeElement(this);
+	}
+
 	this.mother = mother;
-	Persons.stateChanged(new ChangeEvent(this));
+
+	this.mother.children.addElement(this);
+
+	this.mother.children.stateChanged(new ChangeEvent(this));
+	persons.stateChanged(new ChangeEvent(this));
     }
 
     /* (non-Javadoc)
