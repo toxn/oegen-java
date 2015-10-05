@@ -1,0 +1,45 @@
+﻿<oegendb>
+  <sourcetype id="ST1">
+    <name>Registre BMS</name>
+  </sourcetype>
+  <sourcetype id="ST2">
+    <name>Bâptème</name>
+  </sourcetype>
+  <nametype id="NT1">
+    <name>Last name</name>
+  </nametype>
+  <occupationtype id="OT1">
+    <name>Prètre catholique</name>
+  </occupationtype>
+  <source id="S1" type="ST1">
+    <name>La Parade BMS 1661-1669</name>
+    <source id="S2" type="ST2">
+      <transcription>
+	<span id="sp1">L'an mil six cens soixante un et le vingt
+	  sixiesme jour du mois de nouvembre</span>, Je <span id="sp2">Gabriel</span>
+	<span id="sp3">Arnieu</span> <span id="sp4"><span id="sp5">prestre et curé</span> de <span id="sp6">la parade</span></span> ay <span id="sp7">baptisé</span>
+	une fille d'<span id="sp8">André</span> <span id="s9p">Rabier</span> et de <span id="sp10">françoise</span> <span id="sp11">????</span>
+	<span id="sp12">mariez</span> de <span id="sp13">la retournade</span> <span id="sp14">parroisse susdite</span> à laquelle
+	on a imposé le nom <span id="sp15">margueritte</span> le <span id="sp16">parrin</span>
+	a esté <span id="sp17">Jean</span> <span id="sp18">Carriere</span> du village de <span id="sp19">NAbrigas</span>
+	<span id="sp20">parroisse de <span id="sp21">meyrueys</span></span>, la <span id="sp22">marrine</span> <span id="sp23">Claire</span>
+	<span id="sp24">Rabiere</span> du village d'<span id="sp25">hyalzas</span> <span id="sp26">parroisse
+	susdite de <span id="sp27">la parade</span></span>.
+	-- Arnieu Curé
+      </transcription>
+      <date id="D1" span="sp1">
+	<day>26</day>
+	<month>11</month>
+	<year>1661</year>
+      </date>
+      <actor>
+	<name type="NT1">Arnieu</name>
+	<occupation type="OT1">
+	  <date>D1</date>
+	  <place id="P1"></place>
+	  <text>prètre et curé de la parade</text>
+	</occupation>
+      </actor>
+    </source>
+  </source>
+</oegendb>
