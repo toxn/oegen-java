@@ -25,9 +25,9 @@ public class Person
 
     private Gender gender = Gender.Unknown;
 
-    private String firstName = "";
+    private String firstName = ""; //$NON-NLS-1$
 
-    private String lastName = "";
+    private String lastName = ""; //$NON-NLS-1$
 
     private Person father;
 
@@ -162,6 +162,6 @@ public class Person
     @Override
     public String toString()
     {
-	return firstName + " " + lastName;
+	return firstName + " " + lastName; //$NON-NLS-1$
     }
 }

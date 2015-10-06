@@ -31,6 +31,9 @@ implements Printable
 	public int maxDGen = -1;
 	public int maxAGen = -1;
 	public int dWeight = -1;
+	public PersonTreeData() {
+	    // TODO Stub du constructeur généré automatiquement
+	}
     }
 
     /**
@@ -243,7 +246,7 @@ implements Printable
 	g2d.fillRect(x, y, defBoxWidth, defBoxHeight);
 	g2d.setColor(Color.black);
 	g2d.drawRect(x, y, defBoxWidth, defBoxHeight);
-	g2d.drawString(person.getLastName() + " " + person.getFirstName(),
+	g2d.drawString(person.getLastName() + " " + person.getFirstName(), //$NON-NLS-1$
 		x + defBoxMargin + defBoxStrokeWidth,
 		y + (int) g2d.getFontMetrics().getMaxCharBounds(g2d).getHeight() + defBoxMargin + defBoxStrokeWidth);
 
@@ -266,12 +269,12 @@ implements Printable
 	g2d.setStroke(lineStroke);
 	g2d.setColor(Color.black);
 
-	y += defBoxHeight / 2;
+	int y0 = y + defBoxHeight / 2;
 
 	int x1 = x;
 	int x2 = x - defBoxSpace / 2;
 
-	g2d.drawLine(x1, y, x2, y);
+	g2d.drawLine(x1, y0, x2, y0);
 
 	int dWeight = personDict.get(person).dWeight;
 	int vOffset = dWeight * (defBoxHeight + defBoxSpace) / 2;
@@ -288,8 +291,8 @@ implements Printable
 		    * (defBoxHeight + defBoxSpace)
 		    / 2;
 	}
-	int y1 = y - v1Offset;
-	int y2 = y + v2Offset;
+	int y1 = y0 - v1Offset;
+	int y2 = y0 + v2Offset;
 
 	g2d.drawLine(x2, y1, x2, y2);
 

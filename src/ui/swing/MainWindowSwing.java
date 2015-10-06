@@ -20,10 +20,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import data.Person;
+import ui.Messages;
 
 /**
  * @author toxn
@@ -48,14 +50,14 @@ public final class MainWindowSwing extends ui.MainWindow {
 	Box personListCard = Box.createVerticalBox();
 	Box personListButtons = Box.createHorizontalBox();
 
-	JButton addPersonBtn = new JButton("+");
+	JButton addPersonBtn = new JButton("+"); //$NON-NLS-1$
 	personListButtons.add(addPersonBtn);
 
-	final JButton remPersonBtn = new JButton("×");
+	final JButton remPersonBtn = new JButton("×"); //$NON-NLS-1$
 	remPersonBtn.setEnabled(false);
 	personListButtons.add(remPersonBtn);
 
-	JButton searchPersonBtn = new JButton("Search");
+	JButton searchPersonBtn = new JButton(Messages.getString("MainWindow.Search")); //$NON-NLS-1$
 	personListButtons.add(searchPersonBtn);
 
 	personListCard.add(personListButtons);
@@ -88,37 +90,37 @@ public final class MainWindowSwing extends ui.MainWindow {
 	Box personRelationsButtons = Box.createHorizontalBox();
 	personRelationsCard.add(personRelationsButtons);
 
-	final JButton personRelationsTextButton = new JButton("Text");
+	final JButton personRelationsTextButton = new JButton(Messages.getString("MainWindow.Text")); //$NON-NLS-1$
 	personRelationsTextButton.setEnabled(false);
-	personRelationsButtons.add(personRelationsTextButton, Box.LEFT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsTextButton, Component.LEFT_ALIGNMENT);
 
-	final JButton personRelationsTreeButton = new JButton("Tree");
+	final JButton personRelationsTreeButton = new JButton(Messages.getString("MainWindow.Tree")); //$NON-NLS-1$
 	personRelationsTreeButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsTreeButton, Box.LEFT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsTreeButton, Component.LEFT_ALIGNMENT);
 
-	final JButton personRelationsWheelButton = new JButton("Wheel");
+	final JButton personRelationsWheelButton = new JButton(Messages.getString("MainWindow.Wheel")); //$NON-NLS-1$
 	personRelationsWheelButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsWheelButton, Box.LEFT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsWheelButton, Component.LEFT_ALIGNMENT);
 
-	// personRelationsButtons.add(Box.createHorizontalStrut(20));
+	personRelationsButtons.add(Box.createHorizontalGlue());
 
-	final JButton personRelationsZoomInButton = new JButton("+");
+	final JButton personRelationsZoomInButton = new JButton("+"); //$NON-NLS-1$
 	personRelationsZoomInButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsZoomInButton, Box.RIGHT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsZoomInButton, Component.RIGHT_ALIGNMENT);
 
-	final JButton personRelationsZoomOutButton = new JButton("-");
+	final JButton personRelationsZoomOutButton = new JButton("-"); //$NON-NLS-1$
 	personRelationsZoomOutButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsZoomOutButton, Box.RIGHT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsZoomOutButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsRotateLeftButton = new JButton("<-\\");
+	JButton personRelationsRotateLeftButton = new JButton("<-\\"); //$NON-NLS-1$
 	personRelationsRotateLeftButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsRotateLeftButton, Box.RIGHT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsRotateLeftButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsRotateRightButton = new JButton("/->");
+	JButton personRelationsRotateRightButton = new JButton("/->"); //$NON-NLS-1$
 	personRelationsRotateRightButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsRotateRightButton, Box.RIGHT_ALIGNMENT);
+	personRelationsButtons.add(personRelationsRotateRightButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsPrintButton = new JButton("Print");
+	JButton personRelationsPrintButton = new JButton(Messages.getString("MainWindow.Print")); //$NON-NLS-1$
 	personRelationsPrintButton.setEnabled(true);
 	personRelationsButtons.add(personRelationsPrintButton);
 
@@ -135,9 +137,9 @@ public final class MainWindowSwing extends ui.MainWindow {
 
 	final JPanel personRelationsPanel = new JPanel(new CardLayout());
 
-	final String relationsCommandText = "TEXT";
-	final String relationsCommandTree = "TREE";
-	final String relationsCommandWheel = "WHEEL";
+	final String relationsCommandText = "TEXT"; //$NON-NLS-1$
+	final String relationsCommandTree = "TREE"; //$NON-NLS-1$
+	final String relationsCommandWheel = "WHEEL"; //$NON-NLS-1$
 
 	personRelationsPanel.add(personSummaryScrollPane, relationsCommandText);
 	personRelationsPanel.add(personTreeScrollPane, relationsCommandTree);
@@ -167,7 +169,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 		personRelationsWheelButton.setEnabled(true);
 
 		CardLayout cl = (CardLayout) personRelationsPanel.getLayout();
-		cl.show(personRelationsPanel, "TREE");
+		cl.show(personRelationsPanel, relationsCommandTree);
 
 	    }
 	});
@@ -180,7 +182,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 		personRelationsTreeButton.setEnabled(true);
 		personRelationsWheelButton.setEnabled(false);
 
-		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, "WHEEL");
+		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandWheel);
 
 	    }
 	});
@@ -193,7 +195,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 		    // 1);
 		    personRelationsZoomOutButton.setEnabled(true);
 		} catch (Exception ex) {
-		    throw new RuntimeException();
+		    throw new RuntimeException(ex);
 		}
 	    }
 	});
@@ -212,7 +214,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 		    personTree.setGenerations(newZoomLevel);
 		    // personWheel.setGenerations(newZoomLevel);
 		} catch (Exception ex) {
-		    throw new RuntimeException();
+		    throw new RuntimeException(ex);
 		}
 
 	    }
@@ -223,7 +225,9 @@ public final class MainWindowSwing extends ui.MainWindow {
 	 * Enable fine editing of person's details such as name, events and
 	 * relations
 	 */
-	JComponent personEditorCard = Box.createVerticalBox();
+	PersonEditor personEditorCard = new PersonEditor();
+
+	JScrollPane personEditorScrollPane = new JScrollPane(personEditorCard);
 
 	/**
 	 * The type of person view (3 types : list, graphical, details)
@@ -234,7 +238,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 	 * A button that switchs from person Details to person graph, or from
 	 * person graph to person list
 	 */
-	final JButton prevPersonViewBtn = new JButton("<");
+	final JButton prevPersonViewBtn = new JButton("<"); //$NON-NLS-1$
 	prevPersonViewBtn.setEnabled(false);
 	personViewPane.add(prevPersonViewBtn);
 
@@ -242,16 +246,21 @@ public final class MainWindowSwing extends ui.MainWindow {
 	 * The container that displays list, graph or detail view
 	 */
 	final JPanel personViewPanel = new JPanel(new CardLayout());
-	personViewPanel.add(personListCard, "LIST");
-	personViewPanel.add(personRelationsCard, "GRAPH");
-	personViewPanel.add(personEditorCard, "DETAILS");
+
+	final String personCardCommandList = "LIST"; //$NON-NLS-1$
+	final String personCardCommandGraph = "GRAPH"; //$NON-NLS-1$
+	final String personCardCommandDetails = "DETAILS"; //$NON-NLS-1$
+
+	personViewPanel.add(personListCard, personCardCommandList);
+	personViewPanel.add(personRelationsCard, personCardCommandGraph);
+	personViewPanel.add(personEditorScrollPane, personCardCommandDetails);
 	personViewPane.add(personViewPanel);
 
 	/**
 	 * A button than switches from person list to person graph or from
 	 * person graph to person details
 	 */
-	final JButton nextPersonViewBtn = new JButton(">");
+	final JButton nextPersonViewBtn = new JButton(">"); //$NON-NLS-1$
 	nextPersonViewBtn.setEnabled(false);
 	personViewPane.add(nextPersonViewBtn);
 
@@ -260,9 +269,10 @@ public final class MainWindowSwing extends ui.MainWindow {
 	 * (Person, Place, Source, etc)
 	 *
 	 */
-	JTabbedPane objectPane = new JTabbedPane(JTabbedPane.LEFT);
-	objectPane.addTab("Person", personViewPane);
+	JTabbedPane objectPane = new JTabbedPane(SwingConstants.LEFT);
+	objectPane.addTab(Messages.getString("Person.Person"), personViewPane); //$NON-NLS-1$
 
+	// getContentPane().add(new JScrollPane(objectPane));
 	getContentPane().add(objectPane);
 
 	// Various notifications and triggers

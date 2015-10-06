@@ -3,6 +3,8 @@
  */
 package ui.swing;
 
+import ui.Messages;
+
 /**
  * @author toxn
  *
@@ -47,7 +49,7 @@ public abstract class PersonRelationalGraphic extends PersonRelationalComponent{
     public void setGenerations(int newGenerations) throws Exception {
 	if (generations != newGenerations) {
 	    if (newGenerations < 1)
-		throw new Exception("Generations should be >= 1.");
+		throw new Exception(Messages.getString("PersonRelationalGraphic.GenerationNumTooLow")); //$NON-NLS-1$
 
 	    generations = newGenerations;
 	    rebuild();

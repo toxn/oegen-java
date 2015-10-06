@@ -19,109 +19,109 @@ public final class Main
     {
 	// Create a small testing set
 	Person oldpa1 = new Person();
-	oldpa1.setFirstName("Old'pa");
-	oldpa1.setLastName("Oiseau");
+	oldpa1.setFirstName("Old'pa"); //$NON-NLS-1$
+	oldpa1.setLastName("Oiseau"); //$NON-NLS-1$
 
 	Person oldma1 = new Person();
-	oldma1.setFirstName("Old'ma");
-	oldma1.setLastName("Oiseau");
+	oldma1.setFirstName("Old'ma"); //$NON-NLS-1$
+	oldma1.setLastName("Oiseau"); //$NON-NLS-1$
 
 	Person oldpa2 = new Person();
-	oldpa2.setFirstName("Old'pa");
-	oldpa2.setLastName("Oiselle");
+	oldpa2.setFirstName("Old'pa"); //$NON-NLS-1$
+	oldpa2.setLastName("Oiselle"); //$NON-NLS-1$
 
 	Person oldma2 = new Person();
-	oldma2.setFirstName("Old'ma");
-	oldma2.setLastName("Oiselle");
+	oldma2.setFirstName("Old'ma"); //$NON-NLS-1$
+	oldma2.setLastName("Oiselle"); //$NON-NLS-1$
 
 	Person oldpa3 = new Person();
-	oldpa3.setFirstName("Old'pa");
-	oldpa3.setLastName("Geai");
+	oldpa3.setFirstName("Old'pa"); //$NON-NLS-1$
+	oldpa3.setLastName("Geai"); //$NON-NLS-1$
 
 	Person oldma3 = new Person();
-	oldma3.setFirstName("Old'ma");
-	oldma3.setLastName("Geai");
+	oldma3.setFirstName("Old'ma"); //$NON-NLS-1$
+	oldma3.setLastName("Geai"); //$NON-NLS-1$
 
 	Person oldpa4 = new Person();
-	oldpa4.setFirstName("Old'pa");
-	oldpa4.setLastName("Mésange");
+	oldpa4.setFirstName("Old'pa"); //$NON-NLS-1$
+	oldpa4.setLastName("Mésange"); //$NON-NLS-1$
 
 	Person oldma4 = new Person();
-	oldma4.setFirstName("Old'ma");
-	oldma4.setLastName("Mésange");
+	oldma4.setFirstName("Old'ma"); //$NON-NLS-1$
+	oldma4.setLastName("Mésange"); //$NON-NLS-1$
 
 	Person grandpa = new Person();
-	grandpa.setFirstName("Grand'pa");
-	grandpa.setLastName("Oiseau");
+	grandpa.setFirstName("Grand'pa"); //$NON-NLS-1$
+	grandpa.setLastName("Oiseau"); //$NON-NLS-1$
 	grandpa.setFather(oldpa1);
 	grandpa.setMother(oldma1);
 
 	Person grandma = new Person();
-	grandma.setFirstName("Granny");
-	grandma.setLastName("Oiselle");
+	grandma.setFirstName("Granny"); //$NON-NLS-1$
+	grandma.setLastName("Oiselle"); //$NON-NLS-1$
 	grandma.setFather(oldpa2);
 	grandma.setMother(oldma2);
 
 	Person ara = new Person();
-	ara.setFirstName("Ara");
-	ara.setLastName("Oiseau");
+	ara.setFirstName("Ara"); //$NON-NLS-1$
+	ara.setLastName("Oiseau"); //$NON-NLS-1$
 	ara.setFather(grandpa);
 	ara.setMother(grandma);
 
 	Person grandpa2 = new Person();
-	grandpa2.setFirstName("Grand'pa");
-	grandpa2.setLastName("Geai");
+	grandpa2.setFirstName("Grand'pa"); //$NON-NLS-1$
+	grandpa2.setLastName("Geai"); //$NON-NLS-1$
 	grandpa2.setFather(oldpa3);
 	grandpa2.setMother(oldma3);
 
 	Person grandma2 = new Person();
-	grandma2.setFirstName("Granny");
-	grandma2.setLastName("Mésange");
+	grandma2.setFirstName("Granny"); //$NON-NLS-1$
+	grandma2.setLastName("Mésange"); //$NON-NLS-1$
 	grandma2.setFather(oldpa4);
 	grandma2.setMother(oldma4);
 
 	Person dad = new Person();
-	dad.setFirstName("perroquet");
-	dad.setLastName("oiseau");
+	dad.setFirstName("perroquet"); //$NON-NLS-1$
+	dad.setLastName("oiseau"); //$NON-NLS-1$
 	dad.setFather(grandpa);
 	dad.setMother(grandma);
 
 	Person mom = new Person();
-	mom.setFirstName("mésange");
-	mom.setLastName("geai");
+	mom.setFirstName("mésange"); //$NON-NLS-1$
+	mom.setLastName("geai"); //$NON-NLS-1$
 	mom.setFather(grandpa2);
 	mom.setMother(grandma2);
 
 	Person me = new Person();
-	me.setFirstName("moineau");
+	me.setFirstName("moineau"); //$NON-NLS-1$
 	me.setLastName(dad.getLastName());
 	me.setFather(dad);
 	me.setMother(mom);
 
 	Person alouette = new Person();
-	alouette.setFirstName("alouette");
-	alouette.setLastName("oiseau");
+	alouette.setFirstName("alouette"); //$NON-NLS-1$
+	alouette.setLastName("oiseau"); //$NON-NLS-1$
 	alouette.setFather(dad);
 	alouette.setMother(mom);
 
 	Person pélican = new Person();
-	pélican.setFirstName("Pélican");
-	pélican.setLastName("Oiseau");
+	pélican.setFirstName("Pélican"); //$NON-NLS-1$
+	pélican.setLastName("Oiseau"); //$NON-NLS-1$
 	pélican.setMother(mom);
 	pélican.setFather(dad);
 
 	Person orphanF = new Person();
-	orphanF.setFirstName("Orphan");
-	orphanF.setLastName("Of Father");
+	orphanF.setFirstName("Orphan"); //$NON-NLS-1$
+	orphanF.setLastName("Of Father"); //$NON-NLS-1$
 	orphanF.setMother(mom);
 
 	Person orphanM = new Person();
-	orphanM.setFirstName("Orphan");
-	orphanM.setLastName("Of Mother");
+	orphanM.setFirstName("Orphan"); //$NON-NLS-1$
+	orphanM.setLastName("Of Mother"); //$NON-NLS-1$
 	orphanM.setFather(dad);
 
 	MainWindowSwing mainWin = new MainWindowSwing();
-	mainWin.setTitle("Œgen");
+	mainWin.setTitle("Œgen"); //$NON-NLS-1$
 	mainWin.setSize(800, 600);
 
 	mainWin.setVisible(true);
