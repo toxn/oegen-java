@@ -225,7 +225,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 	 * Enable fine editing of person's details such as name, events and
 	 * relations
 	 */
-	PersonEditor personEditorCard = new PersonEditor();
+	final PersonEditor personEditorCard = new PersonEditor();
 
 	JScrollPane personEditorScrollPane = new JScrollPane(personEditorCard);
 
@@ -304,6 +304,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 		remPersonBtn.setEnabled(bSelectionExists);
 
 		personTree.setCenter(personList.getSelectedValue());
+		personEditorCard.setPerson(personList.getSelectedValue());
 	    }
 	});
 

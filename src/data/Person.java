@@ -3,6 +3,9 @@
  */
 package data;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import javax.swing.event.ChangeEvent;
 
 import ui.PersonListModel;
@@ -14,15 +17,24 @@ import ui.PersonListModel;
 public class Person
 {
     public enum Gender {
-	Unknown,
-	Male,
-	Female,
-	Other
+	Unknown, Male, Female, Other
     }
 
     public static PersonListModel persons = new PersonListModel();
-    public PersonListModel children = new PersonListModel();
 
+    public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
+
+    public static final String PROPERTY_FIRSTNAME = "firstName"; //$NON-NLS-1$
+
+    public static final String PROPERTY_GENDER = "gender"; //$NON-NLS-1$
+
+    public static final String PROPERTY_LASTNAME = "lastName"; //$NON-NLS-1$
+
+    public static final String PROPERTY_MOTHER = "mother"; //$NON-NLS-1$
+
+    public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    public PersonListModel children = new PersonListModel();
     private Gender gender = Gender.Unknown;
 
     private String firstName = ""; //$NON-NLS-1$
@@ -36,6 +48,10 @@ public class Person
     public Person() {
 	super();
 	persons.addElement(this);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+	pcs.addPropertyChangeListener(listener);
     }
 
     /**
@@ -89,70 +105,92 @@ public class Person
 	mother = null;
     }
 
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+	pcs.removePropertyChangeListener(listener);
+    }
+
     /**
-     * @param father the father to set
+     * @param newValue
+     *            the father to set
      */
-    public void setFather(Person father)
+    public void setFather(Person newValue)
     {
-	if (this.father == father)
+	if (father == newValue)
 	    return;
 
-	if (this.father != null) {
-	    this.father.children.removeElement(this);
+	if (father != null) {
+	    father.children.removeElement(this);
 	}
 
-	this.father = father;
+	Person oldValue = father;
 
-	this.father.children.addElement(this);
+	father = newValue;
 
-	this.father.children.stateChanged(new ChangeEvent(this));
+	pcs.firePropertyChange(PROPERTY_FATHER, oldValue, newValue);
+
+	father.children.addElement(this);
+
+	father.children.stateChanged(new ChangeEvent(this));
 	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
-     * @param firstName the firstName to set
+     * @param newValue the firstName to set
      */
-    public void setFirstName(String firstName)
+    public void setFirstName(String newValue)
     {
-	this.firstName = firstName;
+	String oldValue = firstName;
+	firstName = newValue;
+	pcs.firePropertyChange(PROPERTY_FIRSTNAME, oldValue, newValue);
 	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
-     * @param gender le gender à définir
+     * @param newValue
+     *            le gender à définir
      */
-    public void setGender(Gender gender)
+    public void setGender(Gender newValue)
     {
-	this.gender = gender;
+	Gender oldValue = gender;
+	gender = newValue;
+
+	pcs.firePropertyChange(PROPERTY_GENDER, oldValue, newValue);
+
 	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
-     * @param lastName the lastName to set
+     * @param newValue
+     *            the lastName to set
      */
-    public void setLastName(String lastName)
+    public void setLastName(String newValue)
     {
-	this.lastName = lastName;
+	String oldValue = lastName;
+	lastName = newValue;
+	pcs.firePropertyChange(PROPERTY_LASTNAME, oldValue, newValue);
 	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
-     * @param mother the mother to set
+     * @param newValue
+     *            the mother to set
      */
-    public void setMother(Person mother)
+    public void setMother(Person newValue)
     {
-	if (this.mother == mother)
+	if (mother == newValue)
 	    return;
 
-	if (this.mother != null) {
-	    this.mother.children.removeElement(this);
+	if (mother != null) {
+	    mother.children.removeElement(this);
 	}
 
-	this.mother = mother;
+	Person oldValue = mother;
+	mother = newValue;
+	pcs.firePropertyChange(PROPERTY_MOTHER, oldValue, newValue);
 
-	this.mother.children.addElement(this);
+	mother.children.addElement(this);
 
-	this.mother.children.stateChanged(new ChangeEvent(this));
+	mother.children.stateChanged(new ChangeEvent(this));
 	persons.stateChanged(new ChangeEvent(this));
     }
 
