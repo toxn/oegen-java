@@ -12,17 +12,19 @@ import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import data.Person;
 import data.Person.Gender;
 import ui.Messages;
+import ui.PersonTableModel;
 
 /**
  * @author toxn
@@ -46,6 +48,10 @@ implements ui.PersonEditor, PropertyChangeListener, ActionListener, FocusListene
     private final JTextField firstNameTextField = new JTextField(20);
     private final JTextField lastNameTextField = new JTextField(20);
     private final JComboBox<Gender> genderComboBox = new JComboBox<Person.Gender>(Person.Gender.values());
+
+    private final JTable childrenTable;
+
+    private final JTabbedPane subsTab;
 
     PersonEditor() {
 	super(new GridBagLayout());
@@ -77,23 +83,30 @@ implements ui.PersonEditor, PropertyChangeListener, ActionListener, FocusListene
 	add(new JLabel(Messages.getString("Person.Gender") + " "), gbc); //$NON-NLS-1$ //$NON-NLS-2$
 
 	gbc = new GridBagConstraints();
+	gbc.gridwidth = GridBagConstraints.REMAINDER;
 	gbc.anchor = GridBagConstraints.BASELINE_LEADING;
 	add(genderComboBox, gbc);
 
 	gbc = new GridBagConstraints();
-	gbc.gridwidth = GridBagConstraints.REMAINDER;
-	add(new JPanel(), gbc);
-
-	gbc = new GridBagConstraints();
-	gbc.gridwidth = GridBagConstraints.REMAINDER;
-	add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
-
-	gbc = new GridBagConstraints();
+	gbc.fill = GridBagConstraints.BOTH;
 	gbc.gridwidth = GridBagConstraints.REMAINDER;
 	gbc.gridheight = GridBagConstraints.REMAINDER;
 	gbc.weightx = 1.0;
 	gbc.weighty = 1.0;
-	add(new JTabbedPane(), gbc);
+	subsTab = new JTabbedPane();
+	add(subsTab, gbc);
+
+	Box childrenBox = Box.createVerticalBox();
+	Box childrenBoxButtonBar = Box.createHorizontalBox();
+
+	// TODO: add buttons
+
+	childrenBox.add(childrenBoxButtonBar);
+
+	childrenTable = new JTable();
+	childrenBox.add(new JScrollPane(childrenTable));
+
+	subsTab.add(Messages.getString("Person.children"), childrenBox); //$NON-NLS-1$
 
 	lastNameTextField.setActionCommand(ACTIONCOMMAND_CHANGE_LASTNAME);
 	lastNameTextField.addActionListener(this);
@@ -209,6 +222,8 @@ implements ui.PersonEditor, PropertyChangeListener, ActionListener, FocusListene
 	copyFirstNameFromPerson();
 	copyLastNameFromPerson();
 	copyGenderFromPerson();
+
+	childrenTable.setModel(new PersonTableModel(person.children));
 
 	// subscribe this to changes of person's field.
 	person.addPropertyChangeListener(this);
