@@ -5,6 +5,8 @@ package data;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.HashMap;
+import java.util.UUID;
 
 import javax.swing.event.ChangeEvent;
 
@@ -21,6 +23,7 @@ public class Person
     }
 
     public static PersonListModel persons = new PersonListModel();
+    public static HashMap<String, Person> indexId = new HashMap<>();
 
     public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
 
@@ -31,6 +34,10 @@ public class Person
     public static final String PROPERTY_LASTNAME = "lastName"; //$NON-NLS-1$
 
     public static final String PROPERTY_MOTHER = "mother"; //$NON-NLS-1$
+
+    public static final String PROPERTY_ID = "id"; //$NON-NLS-1$
+
+    public static final String CLASSNAME = "person"; //$NON-NLS-1$
 
     public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -45,9 +52,12 @@ public class Person
 
     private Person mother;
 
+    private String id;
+
     public Person() {
 	super();
 	persons.addElement(this);
+	setId(null);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -76,6 +86,13 @@ public class Person
     public Gender getGender()
     {
 	return gender;
+    }
+
+    /**
+     * @return le id
+     */
+    public String getId() {
+	return id;
     }
 
     /**
@@ -160,6 +177,28 @@ public class Person
     }
 
     /**
+     * @param id le id à définir
+     */
+    public void setId(String newValue) {
+	String newId = newValue;
+	if (newId == null) {
+	    newId = UUID.randomUUID().toString();
+	}
+
+	if (id != null) {
+	    indexId.remove(id);
+	}
+
+	String oldId = id;
+
+	id = newId;
+	indexId.put(newId, this);
+
+	pcs.firePropertyChange(PROPERTY_ID, oldId, newId);
+	persons.stateChanged(new ChangeEvent(this));
+    }
+
+    /**
      * @param newValue
      *            the lastName to set
      */
@@ -175,8 +214,7 @@ public class Person
      * @param newValue
      *            the mother to set
      */
-    public void setMother(Person newValue)
-    {
+    public void setMother(Person newValue) {
 	if (mother == newValue)
 	    return;
 
@@ -200,6 +238,6 @@ public class Person
     @Override
     public String toString()
     {
-	return firstName + " " + lastName; //$NON-NLS-1$
+	return firstName + " " + lastName + " [" + id + "]"; //$NON-NLS-1$
     }
 }

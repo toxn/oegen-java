@@ -127,5 +127,4 @@ public final class Main
 	mainWin.setVisible(true);
 
     }
-
 }
