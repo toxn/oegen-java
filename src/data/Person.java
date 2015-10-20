@@ -22,6 +22,8 @@ public class Person
 	Unknown, Male, Female, Other
     }
 
+    public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
+
     public static PersonListModel persons = new PersonListModel();
     public static HashMap<String, Person> indexId = new HashMap<>();
 
@@ -38,6 +40,8 @@ public class Person
     public static final String PROPERTY_ID = "id"; //$NON-NLS-1$
 
     public static final String CLASSNAME = "person"; //$NON-NLS-1$
+    public static final String PROPERTY_CHILDREN = "children";
+    public static final String TAG_CHILD = "child";
 
     public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -182,7 +186,7 @@ public class Person
     public void setId(String newValue) {
 	String newId = newValue;
 	if (newId == null) {
-	    newId = UUID.randomUUID().toString();
+	    newId = GENERATED_ID_PREFIX + UUID.randomUUID().toString();
 	}
 
 	if (id != null) {

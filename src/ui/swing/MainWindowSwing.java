@@ -276,7 +276,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 	getContentPane().add(objectPane);
 
 	// Various notifications and triggers
-	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 	// Connect the button to the Cards
 	prevPersonViewBtn.addActionListener(new ActionListener() {

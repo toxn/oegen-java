@@ -3,7 +3,14 @@
  */
 package ctrl;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import data.Person;
+import data.io.xml.Exporter;
 import ui.swing.MainWindowSwing;
 
 /**
@@ -124,7 +131,62 @@ public final class Main
 	mainWin.setTitle("Œgen"); //$NON-NLS-1$
 	mainWin.setSize(800, 600);
 
+	mainWin.addWindowListener(new WindowListener() {
+
+	    @Override
+	    public void windowActivated(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowClosed(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowClosing(WindowEvent e) {
+		try (FileOutputStream fos = new FileOutputStream("oegen.xml")) {
+		    Exporter exp = new Exporter (fos);
+		    exp.doExport();
+		} catch (FileNotFoundException e1) {
+		    // TODO Bloc catch généré automatiquement
+		    e1.printStackTrace();
+		} catch (IOException e1) {
+		    // TODO Bloc catch généré automatiquement
+		    e1.printStackTrace();
+		}
+
+		System.exit(0);
+	    }
+
+	    @Override
+	    public void windowDeactivated(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowDeiconified(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowIconified(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowOpened(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+	});
 	mainWin.setVisible(true);
 
     }
+
 }
