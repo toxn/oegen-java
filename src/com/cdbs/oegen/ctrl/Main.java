@@ -1,7 +1,7 @@
 /**
  *
  */
-package ctrl;
+package com.cdbs.oegen.ctrl;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -9,9 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import data.Person;
-import data.io.xml.Exporter;
-import ui.swing.MainWindowSwing;
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.io.xml.Exporter;
+import com.cdbs.oegen.ui.swing.MainWindowSwing;
 
 /**
  * @author toxn

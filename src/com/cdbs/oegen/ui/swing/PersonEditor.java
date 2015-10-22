@@ -1,7 +1,7 @@
 /**
  *
  */
-package ui.swing;
+package com.cdbs.oegen.ui.swing;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,17 +21,17 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import data.Person;
-import data.Person.Gender;
-import ui.Messages;
-import ui.PersonTableModel;
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.Person.Gender;
+import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonTableModel;
 
 /**
  * @author toxn
  *
  */
 public class PersonEditor extends JPanel
-implements ui.PersonEditor, PropertyChangeListener, ActionListener, FocusListener {
+implements com.cdbs.oegen.ui.PersonEditor, PropertyChangeListener, ActionListener, FocusListener {
     /**
      *
      */

@@ -1,7 +1,7 @@
 /**
  *
  */
-package data;
+package com.cdbs.oegen.data;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import javax.swing.event.ChangeEvent;
 
-import ui.PersonListModel;
+import com.cdbs.oegen.ui.PersonListModel;
 
 /**
  * @author toxn

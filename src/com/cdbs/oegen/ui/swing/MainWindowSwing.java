@@ -1,7 +1,7 @@
 /**
  *
  */
-package ui.swing;
+package com.cdbs.oegen.ui.swing;
 
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -24,14 +24,14 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import data.Person;
-import ui.Messages;
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.ui.Messages;
 
 /**
  * @author toxn
  *
  */
-public final class MainWindowSwing extends ui.MainWindow {
+public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
     /**
      *
      */

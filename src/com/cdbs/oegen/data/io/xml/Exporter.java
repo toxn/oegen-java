@@ -1,8 +1,10 @@
-package data.io.xml;
+package com.cdbs.oegen.data.io.xml;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -12,14 +14,18 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
-import data.Person;
-import data.Person.Gender;
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.Person.Gender;
 
-public class Exporter extends data.io.Exporter {
+public class Exporter extends com.cdbs.oegen.data.io.Exporter {
+    private static final String PERSON_REF = "personRef"; //$NON-NLS-1$
     DocumentBuilderFactory dbf;
     DocumentBuilder db;
     Document doc;
@@ -31,10 +37,19 @@ public class Exporter extends data.io.Exporter {
 	dbf = DocumentBuilderFactory.newInstance();
 
 	try {
+
+	    // dbf.setValidating(true);
+	    // dbf.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+	    // javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+	    // dbf.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource",
+	    // new File("oegen-kiss.xsd"));
+	    SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+	    Schema schema = sf.newSchema(new File("oegen-kiss.xsd"));
+	    dbf.setSchema(schema);
 	    db = dbf.newDocumentBuilder();
 	    doc = db.newDocument();
 
-	} catch (ParserConfigurationException e) {
+	} catch (ParserConfigurationException | SAXException e) {
 	    // TODO Bloc catch généré automatiquement
 	    e.printStackTrace();
 	}
@@ -43,13 +58,17 @@ public class Exporter extends data.io.Exporter {
 
     @Override
     public void doExport() {
+	Element db = doc.createElement("oegendb");
+	db.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+	db.setAttribute("xsi:schemaLocation", "com.cdbs.oegen oegen-kiss.xsd");
+	doc.appendChild(db);
 	for(Person p : Person.persons) {
 	    if (exportedPersons.containsKey(p)) {
 		// Person is already exported, let's skip it
 		continue;
 	    }
 
-	    doc.appendChild(exportPerson(p, null));
+	    db.appendChild(exportPerson(p, null));
 	}
 
 	TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -70,7 +89,7 @@ public class Exporter extends data.io.Exporter {
      * @param person person to add
      */
     public Element exportPerson(Person person, Person source) {
-	Element personElement = doc.createElement(Person.CLASSNAME);
+	Element personElement;
 	String id = person.getId();
 	String firstName = person.getFirstName();
 	String lastName = person.getLastName();
@@ -79,13 +98,15 @@ public class Exporter extends data.io.Exporter {
 	Person mother = person.getMother();
 
 	if (exportedPersons.containsKey(person)) {
+	    personElement = doc.createElement(PERSON_REF);
 	    Element ep = exportedPersons.get(person);
 	    if (!ep.hasAttribute(Person.PROPERTY_ID)) {
 		ep.setAttribute(Person.PROPERTY_ID, id);
 	    }
 
-	    personElement.setAttribute(Person.PROPERTY_ID, id);
+	    personElement.setAttribute("ref", id);
 	} else {
+	    personElement = doc.createElement(Person.CLASSNAME);
 	    if (!id.startsWith(Person.GENERATED_ID_PREFIX)) {
 		personElement.setAttribute(Person.PROPERTY_ID, id);
 	    }

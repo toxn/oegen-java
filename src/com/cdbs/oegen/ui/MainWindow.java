@@ -1,7 +1,7 @@
 /**
  *
  */
-package ui;
+package com.cdbs.oegen.ui;
 
 import javax.swing.JFrame;
 

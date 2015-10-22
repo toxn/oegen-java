@@ -1,11 +1,11 @@
 /**
  *
  */
-package ui.swing;
+package com.cdbs.oegen.ui.swing;
 
 import javax.swing.JComponent;
 
-import data.Person;
+import com.cdbs.oegen.data.Person;
 
 /**
  * @author toxn

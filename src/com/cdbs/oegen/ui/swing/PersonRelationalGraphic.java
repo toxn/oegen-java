@@ -1,9 +1,9 @@
 /**
  *
  */
-package ui.swing;
+package com.cdbs.oegen.ui.swing;
 
-import ui.Messages;
+import com.cdbs.oegen.ui.Messages;
 
 /**
  * @author toxn

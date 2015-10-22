@@ -1,4 +1,4 @@
-package data.io;
+package com.cdbs.oegen.data.io;
 
 import java.io.InputStream;
 
