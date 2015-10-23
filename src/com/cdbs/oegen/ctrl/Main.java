@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.Person.Gender;
 import com.cdbs.oegen.data.io.xml.Exporter;
 import com.cdbs.oegen.ui.swing.MainWindowSwing;
 
@@ -28,6 +29,7 @@ public final class Main
 	Person oldpa1 = new Person();
 	oldpa1.setFirstName("Old'pa"); //$NON-NLS-1$
 	oldpa1.setLastName("Oiseau"); //$NON-NLS-1$
+	oldpa1.setGender(Gender.Male);
 
 	Person oldma1 = new Person();
 	oldma1.setFirstName("Old'ma"); //$NON-NLS-1$

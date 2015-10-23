@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -17,8 +12,6 @@ import com.cdbs.oegen.data.Person;
 import com.cdbs.oegen.ui.Messages;
 
 public class Importer extends com.cdbs.oegen.data.io.Importer {
-    public static final String PERSON_TAG_RELATION = "relation"; //$NON-NLS-1$
-
     private static void importNode(Node node) {
 	switch (node.getNodeName()) {
 	case Person.CLASSNAME:
@@ -62,7 +55,7 @@ public class Importer extends com.cdbs.oegen.data.io.Importer {
 		case Person.CLASSNAME:
 		    Person p2 = importPerson(n);
 
-		    switch (n.getAttributes().getNamedItem(PERSON_TAG_RELATION).getNodeValue()) {
+		    switch (n.getAttributes().getNamedItem(XmlIOContext.PERSON_ATTR_RELATION).getNodeValue()) {
 		    case Person.PROPERTY_FATHER:
 			p.setFather(p2);
 			break;
@@ -78,7 +71,7 @@ public class Importer extends com.cdbs.oegen.data.io.Importer {
 		    default:
 			throw new RuntimeException(
 				MessageFormat.format(Messages.getString("Importer.UnkownRelationType"), //$NON-NLS-1$
-					n.getAttributes().getNamedItem(PERSON_TAG_RELATION).getNodeValue()));
+					n.getAttributes().getNamedItem(XmlIOContext.PERSON_ATTR_RELATION).getNodeValue()));
 		    }
 		}
 	    }
@@ -86,39 +79,31 @@ public class Importer extends com.cdbs.oegen.data.io.Importer {
 
 	return p;
     }
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
 
     public Importer(InputStream is) {
 	super(is);
-
-	dbf = DocumentBuilderFactory.newInstance();
-
-	try {
-	    dbf.setValidating(true);
-	    dbf.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-		    "http://www.w3.org/2001/XMLSchema");
-	    db = dbf.newDocumentBuilder();
-	    doc = db.parse(inputStream);
-
-	} catch (ParserConfigurationException | SAXException | IOException e) {
-	    // TODO Bloc catch généré automatiquement
-	    e.printStackTrace();
-	}
     }
 
     @Override
     public void doImport() {
-	NodeList nl = doc.getChildNodes();
+
+	try {
+	    NodeList nl = XmlIOContext.getDocument(inputStream).getChildNodes();
 
 
-	for (int i = 0; i < nl.getLength(); i++) {
-	    Node n = nl.item(i);
+	    for (int i = 0; i < nl.getLength(); i++) {
+		Node n = nl.item(i);
 
-	    if (n.getNodeType() == Node.ELEMENT_NODE) {
-		importNode(n);
+		if (n.getNodeType() == Node.ELEMENT_NODE) {
+		    importNode(n);
+		}
 	    }
+	} catch (SAXException e) {
+	    // TODO Bloc catch généré automatiquement
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    // TODO Bloc catch généré automatiquement
+	    e.printStackTrace();
 	}
     }
 

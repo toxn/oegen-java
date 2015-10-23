@@ -1,69 +1,48 @@
 package com.cdbs.oegen.data.io.xml;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import com.cdbs.oegen.data.Person;
 import com.cdbs.oegen.data.Person.Gender;
+import com.cdbs.oegen.ui.Messages;
 
 public class Exporter extends com.cdbs.oegen.data.io.Exporter {
-    private static final String PERSON_REF = "personRef"; //$NON-NLS-1$
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
+
     Document doc;
 
     HashMap<Person, Element> exportedPersons = new HashMap<>();
 
     public Exporter(OutputStream is) {
 	super(is);
-	dbf = DocumentBuilderFactory.newInstance();
 
-	try {
-
-	    // dbf.setValidating(true);
-	    // dbf.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-	    // javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-	    // dbf.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource",
-	    // new File("oegen-kiss.xsd"));
-	    SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-	    Schema schema = sf.newSchema(new File("oegen-kiss.xsd"));
-	    dbf.setSchema(schema);
-	    db = dbf.newDocumentBuilder();
-	    doc = db.newDocument();
-
-	} catch (ParserConfigurationException | SAXException e) {
-	    // TODO Bloc catch généré automatiquement
-	    e.printStackTrace();
-	}
     }
-
 
     @Override
     public void doExport() {
-	Element db = doc.createElement("oegendb");
-	db.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	db.setAttribute("xsi:schemaLocation", "com.cdbs.oegen oegen-kiss.xsd");
+	try {
+	    doc = XmlIOContext.getDocument(null);
+	} catch (Exception e1) {
+	    throw new RuntimeException(Messages.getString("Exporter.internalError"), e1); //$NON-NLS-1$
+	}
+
+	Element db = doc.createElement(XmlIOContext.DB_NAME);
+	db.setAttribute(XmlIOContext.DB_SCHEMA_W3C_PREFIX, XmlIOContext.DB_SCHEMA_W3C_URI);
+	db.setAttribute(XmlIOContext.DB_SCHEMA_OEGEN_PREFIX, XmlIOContext.DB_SCHEMA_OEGEN_URI);
 	doc.appendChild(db);
+
 	for(Person p : Person.persons) {
-	    if (exportedPersons.containsKey(p)) {
+	    if (!isComplete() && exportedPersons.containsKey(p)) {
 		// Person is already exported, let's skip it
 		continue;
 	    }
@@ -98,13 +77,13 @@ public class Exporter extends com.cdbs.oegen.data.io.Exporter {
 	Person mother = person.getMother();
 
 	if (exportedPersons.containsKey(person)) {
-	    personElement = doc.createElement(PERSON_REF);
+	    personElement = doc.createElement(XmlIOContext.PERSONREF_NAME);
 	    Element ep = exportedPersons.get(person);
 	    if (!ep.hasAttribute(Person.PROPERTY_ID)) {
 		ep.setAttribute(Person.PROPERTY_ID, id);
 	    }
 
-	    personElement.setAttribute("ref", id);
+	    personElement.setAttribute(XmlIOContext.PERSONREF_ATTR_REF, id);
 	} else {
 	    personElement = doc.createElement(Person.CLASSNAME);
 	    if (!id.startsWith(Person.GENERATED_ID_PREFIX)) {
@@ -130,24 +109,34 @@ public class Exporter extends com.cdbs.oegen.data.io.Exporter {
 		personElement.appendChild(genderElement);
 	    }
 
-	    if (father != null && father != source) {
+	    if (father != null && (father != source || isComplete())) {
 		Element fatherElement = exportPerson(person.getFather(), person);
-		fatherElement.setAttribute(Importer.PERSON_TAG_RELATION, Person.PROPERTY_FATHER);
+		fatherElement.setAttribute(XmlIOContext.PERSON_ATTR_RELATION, Person.PROPERTY_FATHER);
 		personElement.appendChild(fatherElement);
 	    }
 
-	    if (mother != null && source != mother) {
+	    if (mother != null && (source != mother || isComplete())) {
 		Element motherElement = exportPerson(person.getMother(), person);
-		motherElement.setAttribute(Importer.PERSON_TAG_RELATION, Person.PROPERTY_MOTHER);
+		motherElement.setAttribute(XmlIOContext.PERSON_ATTR_RELATION, Person.PROPERTY_MOTHER);
 		personElement.appendChild(motherElement);
 	    }
 
-	    if (!person.children.isEmpty()) {
+	    /*
+	     * In case we are in complete mode, children list is appened even if
+	     * it's empty. If else, children list is not appened whenever it is
+	     * empty or it only contains the parent node (ie source).
+	     */
+	    // TODO: Don't use ListOf if there's only one child.
+	    if (isComplete() || !(person.children.isEmpty()
+		    || person.children.size() == 1 && person.children.contains(source))) {
+		Element childrenElement = doc.createElement(XmlIOContext.LISTOF_NAME);
+		personElement.appendChild(childrenElement);
+
+		childrenElement.setAttribute(XmlIOContext.LISTOF_ATTR_OF, XmlIOContext.P2PRELTYPE_CHILD);
+
 		for (Person child : person.children) {
-		    if (child != source) {
-			Element childElement = exportPerson(child, person);
-			childElement.setAttribute(Importer.PERSON_TAG_RELATION, Person.TAG_CHILD);
-			personElement.appendChild(childElement);
+		    if (child != source || isComplete()) {
+			childrenElement.appendChild(exportPerson(child, person));
 		    }
 		}
 	    }
