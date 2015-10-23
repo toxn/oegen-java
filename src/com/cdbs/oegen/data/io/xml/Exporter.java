@@ -126,17 +126,26 @@ public class Exporter extends com.cdbs.oegen.data.io.Exporter {
 	     * it's empty. If else, children list is not appened whenever it is
 	     * empty or it only contains the parent node (ie source).
 	     */
-	    // TODO: Don't use ListOf if there's only one child.
 	    if (isComplete() || !(person.children.isEmpty()
 		    || person.children.size() == 1 && person.children.contains(source))) {
-		Element childrenElement = doc.createElement(XmlIOContext.LISTOF_NAME);
-		personElement.appendChild(childrenElement);
+		if (!isComplete() && person.children.size() > (person.children.contains(source) ? 2 : 1)) {
+		    for (Person child : person.children) {
+			if (child != source) {
+			    Element childElement = exportPerson(child, person);
+			    childElement.setAttribute(XmlIOContext.PERSON_ATTR_RELATION, XmlIOContext.P2PRELTYPE_CHILD);
+			    personElement.appendChild(childElement);
+			}
+		    }
+		} else {
+		    Element childrenElement = doc.createElement(XmlIOContext.LISTOF_NAME);
+		    personElement.appendChild(childrenElement);
 
-		childrenElement.setAttribute(XmlIOContext.LISTOF_ATTR_OF, XmlIOContext.P2PRELTYPE_CHILD);
+		    childrenElement.setAttribute(XmlIOContext.LISTOF_ATTR_OF, XmlIOContext.P2PRELTYPE_CHILD);
 
-		for (Person child : person.children) {
-		    if (child != source || isComplete()) {
-			childrenElement.appendChild(exportPerson(child, person));
+		    for (Person child : person.children) {
+			if (child != source || isComplete()) {
+			    childrenElement.appendChild(exportPerson(child, person));
+			}
 		    }
 		}
 	    }
