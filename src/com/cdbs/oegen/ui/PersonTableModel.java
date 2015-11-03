@@ -1,7 +1,7 @@
 /**
  *
  */
-package ui;
+package com.cdbs.oegen.ui;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import data.Person;
+import com.cdbs.oegen.data.Person;
 
 /**
  * @author toxn

@@ -1,7 +1,7 @@
 /**
  * Displays a tree of ascendant and/or descendants of a person
  */
-package ui.swing;
+package com.cdbs.oegen.ui.swing;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,7 +17,7 @@ import java.util.Hashtable;
 
 import javax.swing.border.Border;
 
-import data.Person;
+import com.cdbs.oegen.data.Person;
 
 /**
  * @author toxn
@@ -389,7 +389,7 @@ implements Printable
 	defMariageSpace = (int) getFontMetrics(getFont()).getMaxCharBounds(getGraphics()).getWidth() + 2 * defBoxMargin;
 	defBoxSpace = defMariageSpace / 2;
 
-	// First let's populate the person data dictionary
+	// First let's populate the person com.cdbs.oegen.data dictionary
 	personDict.clear();
 
 	for (Person p : Person.persons) {

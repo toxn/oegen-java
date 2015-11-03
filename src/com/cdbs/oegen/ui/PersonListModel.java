@@ -1,7 +1,7 @@
 /**
  *
  */
-package ui;
+package com.cdbs.oegen.ui;
 
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -12,7 +12,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import data.Person;
+import com.cdbs.oegen.data.Person;
 
 /**
  * @author toxn

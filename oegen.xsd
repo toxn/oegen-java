@@ -1,25 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <xs:schema
    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-   xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.nubean.com/schemas/schema.xsd" > 
+   targetNamespace="com.cdbs.oegen" xmlns="com.cdbs.oegen" > 
+  <xs:include schemaLocation="oegen-kiss.xsd"/>
   
-  <xs:complexType name="oebject" abstract="true">
-  	<xs:sequence>
-	   	<xs:element name="comment" minOccurs="0">
-	    	<xs:complexType>
-	     		<xs:sequence>
-	      			<xs:any namespace="http://www.w3.org/1999/xhtml"
-	           			minOccurs="1" maxOccurs="unbounded"
-	           			processContents="skip"/>
-	     		</xs:sequence> 
-	    	</xs:complexType>	
-	    </xs:element>	
-  	</xs:sequence>
-	<xs:attribute name="id" type="xs:ID" />
-	<xs:attribute name="name" type="xs:string" />
-  </xs:complexType>
-  	
   <xs:complexType name="source">
   	<xs:complexContent>
   		<xs:extension base="oebject">

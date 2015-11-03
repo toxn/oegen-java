@@ -1,21 +1,25 @@
 /**
  *
  */
-package ui.swing;
+package com.cdbs.oegen.ui.swing;
 
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -24,24 +28,83 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import data.Person;
-import ui.Messages;
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.ui.Messages;
 
 /**
  * @author toxn
  *
  */
-public final class MainWindowSwing extends ui.MainWindow {
+public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
+    private final Action newAction = new CustomAction("New") { //$NON-NLS-1$
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    System.exit(0);
+
+	}
+
+
+
+    };
+
+    private final Action openAction = new CustomAction("Open") { //$NON-NLS-1$
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    System.exit(0);
+
+	}
+    };
+    private final Action saveAction = new CustomAction("Save") { //$NON-NLS-1$
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+	}
+
+    };
+
+    private final Action saveAsAction = new CustomAction("SaveAs") { //$NON-NLS-1$
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+	}
+
+    };
+
+    private final Action quitAction = new CustomAction("Quit") {
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    System.exit(0);
+
+	}
+    };
     /**
      * @throws HeadlessException
      */
     public MainWindowSwing() throws HeadlessException {
 	super();
+
+	JMenuBar menuBar = new JMenuBar();
+	setJMenuBar(menuBar);
+
+	JMenu fileMenu = new JMenu(Messages.getString("MainWindowSwing.FileMenu")); //$NON-NLS-1$
+	fileMenu.setMnemonic(KeyEvent.VK_F);
+	menuBar.add(fileMenu);
+
+	fileMenu.add(newAction);
+	fileMenu.add(openAction);
+	fileMenu.add(saveAction);
+	fileMenu.add(saveAsAction);
+	fileMenu.addSeparator();
+	fileMenu.add(quitAction);
 
 	/**
 	 * Contains a list of persons along with a toolbar to create, delete or
@@ -276,7 +339,7 @@ public final class MainWindowSwing extends ui.MainWindow {
 	getContentPane().add(objectPane);
 
 	// Various notifications and triggers
-	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 	// Connect the button to the Cards
 	prevPersonViewBtn.addActionListener(new ActionListener() {

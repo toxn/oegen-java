@@ -1,10 +1,18 @@
 /**
  *
  */
-package ctrl;
+package com.cdbs.oegen.ctrl;
 
-import data.Person;
-import ui.swing.MainWindowSwing;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.Person.Gender;
+import com.cdbs.oegen.data.io.xml.Exporter;
+import com.cdbs.oegen.ui.swing.MainWindowSwing;
 
 /**
  * @author toxn
@@ -21,6 +29,7 @@ public final class Main
 	Person oldpa1 = new Person();
 	oldpa1.setFirstName("Old'pa"); //$NON-NLS-1$
 	oldpa1.setLastName("Oiseau"); //$NON-NLS-1$
+	oldpa1.setGender(Gender.Male);
 
 	Person oldma1 = new Person();
 	oldma1.setFirstName("Old'ma"); //$NON-NLS-1$
@@ -124,6 +133,60 @@ public final class Main
 	mainWin.setTitle("Œgen"); //$NON-NLS-1$
 	mainWin.setSize(800, 600);
 
+	mainWin.addWindowListener(new WindowListener() {
+
+	    @Override
+	    public void windowActivated(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowClosed(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowClosing(WindowEvent e) {
+		try (FileOutputStream fos = new FileOutputStream("oegen.xml")) {
+		    Exporter exp = new Exporter (fos);
+		    exp.doExport();
+		} catch (FileNotFoundException e1) {
+		    // TODO Bloc catch généré automatiquement
+		    e1.printStackTrace();
+		} catch (IOException e1) {
+		    // TODO Bloc catch généré automatiquement
+		    e1.printStackTrace();
+		}
+
+		System.exit(0);
+	    }
+
+	    @Override
+	    public void windowDeactivated(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowDeiconified(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowIconified(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+
+	    @Override
+	    public void windowOpened(WindowEvent e) {
+		// TODO Stub de la méthode généré automatiquement
+
+	    }
+	});
 	mainWin.setVisible(true);
 
     }

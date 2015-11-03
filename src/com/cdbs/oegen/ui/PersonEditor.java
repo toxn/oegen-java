@@ -1,9 +1,9 @@
 /**
  *
  */
-package ui;
+package com.cdbs.oegen.ui;
 
-import data.Person;
+import com.cdbs.oegen.data.Person;
 
 /**
  * @author toxn
