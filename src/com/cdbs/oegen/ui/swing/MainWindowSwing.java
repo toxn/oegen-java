@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -25,6 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -41,11 +42,16 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
      */
     private static final long serialVersionUID = 1L;
 
-    private final Action newAction = new CustomAction("New") { //$NON-NLS-1$
+    private final CustomAction newAction = new CustomAction("New", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    System.exit(0);
+	    // FIXME
 
 	}
 
@@ -53,32 +59,53 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 
     };
 
-    private final Action openAction = new CustomAction("Open") { //$NON-NLS-1$
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    System.exit(0);
-
-	}
-    };
-    private final Action saveAction = new CustomAction("Save") { //$NON-NLS-1$
+    private final CustomAction openAction = new CustomAction("Open", //$NON-NLS-1$
+	    CustomAction.FLAG_CONFIRM | CustomAction.FLAG_REQUEST) {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	    // FIXME
 
 	}
-
     };
+    private final CustomAction saveAction = new CustomAction("Save") { //$NON-NLS-1$
 
-    private final Action saveAsAction = new CustomAction("SaveAs") { //$NON-NLS-1$
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+	    // FIXME
 	}
 
     };
 
-    private final Action quitAction = new CustomAction("Quit") {
+    private final CustomAction saveAsAction = new CustomAction("SaveAs", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    // FIXME
+	}
+
+    };
+
+    private final CustomAction quitAction = new CustomAction("Quit", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -101,6 +128,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 
 	fileMenu.add(newAction);
 	fileMenu.add(openAction);
+	fileMenu.addSeparator();
 	fileMenu.add(saveAction);
 	fileMenu.add(saveAsAction);
 	fileMenu.addSeparator();
@@ -388,5 +416,33 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 		}
 	    }
 	});
+
+	Person.persons.addListDataListener(new ListDataListener() {
+
+	    @Override
+	    public void contentsChanged(ListDataEvent e) {
+		// Database is not in synch with last save
+		dataChanged();
+	    }
+
+	    @Override
+	    public void intervalAdded(ListDataEvent e) {
+		// Database is not in synch with last save
+		dataChanged();
+	    }
+
+	    @Override
+	    public void intervalRemoved(ListDataEvent e) {
+		// Database is not in synch with last save
+		dataChanged();
+	    }
+	});
+    }
+
+    void dataChanged() {
+	quitAction.setRequest(true);
+	saveAction.setRequest(true);
+	// TODO: Disable newAction if database is empty
+	newAction.setRequest(true);
     }
 }

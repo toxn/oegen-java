@@ -8,7 +8,7 @@
 	</xs:simpleType>
 
 	<xs:complexType name="oebject" abstract="true">
-		<xs:sequence>
+		<xs:sequence maxOccurs="1" minOccurs="0">
 			<xs:element name="comment" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -34,22 +34,34 @@
 						<xs:element name="gender" type="xs:string" minOccurs="0"
 							maxOccurs="1" />
 					</xs:choice>
-					<xs:element name="list" minOccurs="0" maxOccurs="unbounded">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:choice minOccurs="0" maxOccurs="unbounded">
-									<xs:element name="person" type="person" />
-									<xs:element name="personRef" type="personRef" />
-								</xs:choice>
-							</xs:sequence>
-							<xs:attribute name="of" type="p2pRelType" />
-						</xs:complexType>
-					</xs:element>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="person" type="subperson" minOccurs="0"
-							maxOccurs="unbounded" />
-						<xs:element name="personRef" type="person2PersonRef"
-							minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="list" minOccurs="0"
+							maxOccurs="unbounded"
+						>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:choice minOccurs="0"
+										maxOccurs="unbounded"
+									>
+										<xs:element name="person"
+											type="person"
+										/>
+										<xs:element name="personRef"
+											type="personRef"
+										/>
+									</xs:choice>
+								</xs:sequence>
+								<xs:attribute name="of"
+									type="p2pRelType"
+								/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="person" type="subperson"
+							minOccurs="0" maxOccurs="unbounded"
+						/>
+						<xs:element name="personRef"
+							type="person2PersonRef" minOccurs="0" maxOccurs="unbounded"
+						/>
 					</xs:choice>
 				</xs:sequence>
 			</xs:extension>
