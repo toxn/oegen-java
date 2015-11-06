@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import com.cdbs.oegen.data.Person;
 import com.cdbs.oegen.data.Person.Gender;
 import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonListModel;
 import com.cdbs.oegen.ui.PersonTableModel;
 
 /**
@@ -138,26 +139,44 @@ implements com.cdbs.oegen.ui.PersonEditor, PropertyChangeListener, ActionListene
     }
 
     private void copyFirstNameFromPerson() {
+	if (person == null)
+	    return;
+
 	firstNameTextField.setText(person.getFirstName());
     }
 
     private void copyFirstNameToPerson() {
+	if (person == null)
+	    return;
+
 	person.setFirstName(firstNameTextField.getText());
     }
 
     private void copyGenderFromPerson() {
+	if (person == null)
+	    return;
+
 	genderComboBox.setSelectedItem(person.getGender());
     }
 
     private void copyGenderToPerson() {
+	if (person == null)
+	    return;
+
 	person.setGender((Gender) genderComboBox.getSelectedItem());
     }
 
     private void copyLastNameFromPerson() {
+	if (person == null)
+	    return;
+
 	lastNameTextField.setText(person.getLastName());
     }
 
     private void copyLastNameToPerson() {
+	if (person == null)
+	    return;
+
 	person.setLastName(lastNameTextField.getText());
     }
 
@@ -210,22 +229,32 @@ implements com.cdbs.oegen.ui.PersonEditor, PropertyChangeListener, ActionListene
 	if (newValue == person)
 	    return;
 
-	if(newValue == null)
-	    throw new NullPointerException();
-
 	if (person != null) {
 	    person.removePropertyChangeListener(this);
 	}
 	person = newValue;
 
-	// Update displayed fields
-	copyFirstNameFromPerson();
-	copyLastNameFromPerson();
-	copyGenderFromPerson();
+	if (person == null) {
+	    setEnabled(false);
+	    firstNameTextField.setText(null);
+	    lastNameTextField.setText(null);
+	    genderComboBox.setSelectedItem(Gender.Unknown);
 
-	childrenTable.setModel(new PersonTableModel(person.children));
+	    childrenTable.clearSelection();
+	    childrenTable.setModel(new PersonTableModel(new PersonListModel()));
 
-	// subscribe this to changes of person's field.
-	person.addPropertyChangeListener(this);
+	} else {
+	    setEnabled(true);
+
+	    // Update displayed fields
+	    copyFirstNameFromPerson();
+	    copyLastNameFromPerson();
+	    copyGenderFromPerson();
+
+	    childrenTable.setModel(new PersonTableModel(person.children));
+
+	    // subscribe this to changes of person's field.
+	    person.addPropertyChangeListener(this);
+	}
     }
 }

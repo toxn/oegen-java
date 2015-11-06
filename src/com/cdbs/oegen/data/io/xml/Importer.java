@@ -12,6 +12,36 @@ import org.xml.sax.SAXException;
 import com.cdbs.oegen.data.Person;
 
 public class Importer extends com.cdbs.oegen.data.io.Importer {
+    private static void createRelation(Person source, Person destination, String relation) {
+	switch (relation) {
+	case XmlIOContext.P2PRELTYPE_CHILD:
+	    source.children.addElement(destination);
+	    break;
+
+	case XmlIOContext.P2PRELTYPE_FATHER:
+	    source.setFather(destination);
+	    break;
+
+	case XmlIOContext.P2PRELTYPE_MOTHER:
+	    source.setMother(destination);
+	    break;
+
+	case XmlIOContext.P2PRELTYPE_PARENT:
+	    switch (destination.getGender()) {
+	    case Male:
+		source.setFather(destination);
+		break;
+
+	    case Female:
+		source.setMother(destination);
+		break;
+
+	    default:
+		throw new RuntimeException("Parent relation without Male/Female gender.");
+	    }
+	}
+    }
+
     private static void importDB(Element element) {
 
 	assert element.getNodeName() == XmlIOContext.DB_NAME;
@@ -51,21 +81,21 @@ public class Importer extends com.cdbs.oegen.data.io.Importer {
 
 		switch (e.getNodeName()) {
 		case XmlIOContext.PERSON_FIRSTNAME:
-		    currentPerson.setFirstName(e.getNodeValue());
+		    currentPerson.setFirstName(e.getTextContent());
 		    break;
 
 		case XmlIOContext.PERSON_LASTNAME:
-		    currentPerson.setLastName(e.getNodeValue());
+		    currentPerson.setLastName(e.getTextContent());
 		    break;
 
 		case XmlIOContext.PERSON_GENDER:
-		    currentPerson.setGender(Person.Gender.valueOf(e.getNodeValue()));
+		    currentPerson.setGender(Person.Gender.valueOf(e.getTextContent()));
 		    break;
 
 		case XmlIOContext.PERSON_NAME:
 		    subPerson = importPerson(e);
 
-		    switch (n.getAttributes().getNamedItem(XmlIOContext.PERSON_ATTR_RELATION).getNodeValue()) {
+		    switch (e.getAttribute(XmlIOContext.PERSON_ATTR_RELATION)) {
 		    case Person.PROPERTY_FATHER:
 			currentPerson.setFather(subPerson);
 			break;
@@ -85,46 +115,34 @@ public class Importer extends com.cdbs.oegen.data.io.Importer {
 		    }
 		    break;
 
+		case XmlIOContext.PERSONREF_NAME:
+		    createRelation(currentPerson, Person.persons.search(e.getAttribute(XmlIOContext.PERSONREF_ATTR_REF)), e.getAttribute(XmlIOContext.LISTOF_ATTR_OF));
+
+		    break;
+
 		case XmlIOContext.LISTOF_NAME:
 		    String relation = e.getAttribute(XmlIOContext.LISTOF_ATTR_OF);
 
-		    Node listOfNode = e.getFirstChild();
+		    Node nodeFromList = e.getFirstChild();
 
-		    while (listOfNode != null) {
-			if (listOfNode.getNodeType() == Node.ELEMENT_NODE
-				&& listOfNode.getNodeName() == XmlIOContext.PERSON_NAME) {
-			    subPerson = importPerson((Element) listOfNode);
-
-			    switch (relation) {
-			    case XmlIOContext.P2PRELTYPE_CHILD:
-				currentPerson.children.addElement(subPerson);
+		    while (nodeFromList != null) {
+			if (nodeFromList.getNodeType() == Node.ELEMENT_NODE) {
+			    Element elFromList = (Element) nodeFromList;
+			    switch(nodeFromList.getNodeName()) {
+			    case XmlIOContext.PERSON_NAME:
+				createRelation(currentPerson, importPerson(elFromList), relation);
 				break;
 
-			    case XmlIOContext.P2PRELTYPE_FATHER:
-				currentPerson.setFather(subPerson);
+			    case XmlIOContext.PERSONREF_NAME:
+				createRelation(currentPerson,
+					Person.persons.search(elFromList.getAttribute(XmlIOContext.PERSONREF_ATTR_REF)),
+					relation);
 				break;
 
-			    case XmlIOContext.P2PRELTYPE_MOTHER:
-				currentPerson.setMother(subPerson);
-				break;
-
-			    case XmlIOContext.P2PRELTYPE_PARENT:
-				switch (subPerson.getGender()) {
-				case Male:
-				    currentPerson.setFather(subPerson);
-				    break;
-
-				case Female:
-				    currentPerson.setMother(subPerson);
-				    break;
-
-				default:
-				    throw new RuntimeException("Parent relation without Male/Female gender.");
-				}
 			    }
 			}
 
-			listOfNode = listOfNode.getNextSibling();
+			nodeFromList = nodeFromList.getNextSibling();
 		    }
 		}
 	    }

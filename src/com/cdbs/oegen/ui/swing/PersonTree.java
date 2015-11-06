@@ -382,6 +382,14 @@ implements Printable
 
     @Override
     protected void rebuild() {
+	if (getCenter() == null) {
+	    personDict.clear();
+	    setPreferredSize(new Dimension(0, 0));
+	    revalidate();
+	    repaint();
+	    return;
+	}
+
 	defBoxWidth = (int) getFontMetrics(getFont()).getMaxCharBounds(getGraphics()).getWidth() * 10
 		+ 2 * defBoxMargin;
 	defBoxHeight = getFontMetrics(getFont()).getHeight() * 4 + 3 * defBoxMargin + defLineWidth;
