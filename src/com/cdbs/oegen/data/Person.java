@@ -244,6 +244,6 @@ public class Person
     @Override
     public String toString()
     {
-	return firstName + " " + lastName + " [" + id + "]"; //$NON-NLS-1$
+	return firstName + " " + lastName; //$NON-NLS-1$
     }
 }

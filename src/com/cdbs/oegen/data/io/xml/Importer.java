@@ -37,7 +37,7 @@ public class Importer extends com.cdbs.oegen.data.io.Importer {
 		break;
 
 	    default:
-		throw new RuntimeException("Parent relation without Male/Female gender.");
+		throw new RuntimeException(Messages.getString("Importer.ParentWithoutGender")); //$NON-NLS-1$
 	    }
 	}
     }

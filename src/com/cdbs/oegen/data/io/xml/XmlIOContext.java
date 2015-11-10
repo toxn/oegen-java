@@ -54,7 +54,7 @@ public class XmlIOContext {
     public static final String P2PRELTYPE_CHILD = Person.TAG_CHILD;
     public static final String P2PRELTYPE_FATHER = Person.PROPERTY_FATHER;
     public static final String P2PRELTYPE_MOTHER = Person.PROPERTY_MOTHER;
-    public static final String P2PRELTYPE_PARENT = "parent";
+    public static final String P2PRELTYPE_PARENT = "parent"; //$NON-NLS-1$
 
     public static Document getDocument(InputStream inputStream) throws SAXException, IOException {
 	if (inputStream == null)

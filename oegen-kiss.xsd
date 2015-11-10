@@ -1,14 +1,33 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="com.cdbs.oegen" xmlns="com.cdbs.oegen"
+<xs:schema xmlns="com.cdbs.oegen" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="com.cdbs.oegen" elementFormDefault="qualified"
 >
 
 	<xs:simpleType name="oebjectId">
 		<xs:restriction base="xs:string" />
 	</xs:simpleType>
 
+	<xs:simpleType name="p2pRelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="father" />
+			<xs:enumeration value="mother" />
+			<xs:enumeration value="child" />
+			<xs:enumeration value="daughter" />
+			<xs:enumeration value="son" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="gender">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Male" />
+			<xs:enumeration value="Female" />
+			<xs:enumeration value="Unknown" />
+			<xs:enumeration value="Other" />
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:complexType name="oebject" abstract="true">
-		<xs:sequence maxOccurs="1" minOccurs="0">
+		<xs:sequence>
 			<xs:element name="comment" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -27,45 +46,28 @@
 			<xs:extension base="oebject">
 				<xs:sequence>
 					<xs:choice minOccurs="0" maxOccurs="3">
-						<xs:element name="firstName" type="xs:string"
-							minOccurs="0" maxOccurs="1" />
-						<xs:element name="lastName" type="xs:string" minOccurs="0"
-							maxOccurs="1" />
-						<xs:element name="gender" type="xs:string" minOccurs="0"
-							maxOccurs="1" />
+						<xs:element name="firstName" type="xs:string"/>
+						<xs:element name="lastName" type="xs:string"/>
+						<xs:element name="gender" type="gender"  />
 					</xs:choice>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="list" minOccurs="0"
-							maxOccurs="unbounded"
-						>
-							<xs:complexType>
-								<xs:sequence>
-									<xs:choice minOccurs="0"
-										maxOccurs="unbounded"
-									>
-										<xs:element name="person"
-											type="person"
-										/>
-										<xs:element name="personRef"
-											type="personRef"
-										/>
-									</xs:choice>
-								</xs:sequence>
-								<xs:attribute name="of"
-									type="p2pRelType"
-								/>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="person" type="subperson"
-							minOccurs="0" maxOccurs="unbounded"
-						/>
-						<xs:element name="personRef"
-							type="person2PersonRef" minOccurs="0" maxOccurs="unbounded"
-						/>
+						<xs:element name="list" type="listOfPerson"/>
+						<xs:element name="person" type="subperson" />
+						<xs:element name="personRef" type="person2PersonRef" />
 					</xs:choice>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="listOfPerson">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="person" type="person" />
+				<xs:element name="personRef" type="personRef" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="of" type="p2pRelType" />
 	</xs:complexType>
 
 	<xs:complexType name="subperson">
@@ -90,21 +92,12 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:simpleType name="p2pRelType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="father" />
-			<xs:enumeration value="mother" />
-			<xs:enumeration value="child" />
-			<xs:enumeration value="daughter" />
-			<xs:enumeration value="son" />
-		</xs:restriction>
-	</xs:simpleType>
-
 	<xs:element name="oegendb">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:sequence minOccurs="0"
+					maxOccurs="unbounded" >
 				<xs:element name="person" type="person" minOccurs="0"
-					maxOccurs="unbounded" />
+					maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 		<xs:unique name="uniqueId">

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<oegendb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="com.cdbs.oegen oegen-kiss.xsd"
+<?xml version="1.0" encoding="UTF-8" ?>
+<oegendb xmlns="com.cdbs.oegen" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="com.cdbs.oegen oegen-kiss.xsd" 
 >
 	<person>
 		<firstName>Old'pa</firstName>
