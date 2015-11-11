@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<oegendb xmlns="com.cdbs.oegen" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="com.cdbs.oegen oegen-kiss.xsd" 
+>
+	<person>
+		<firstName>Old'pa</firstName>
+		<lastName>Oiseau</lastName>
+		<gender>Male</gender>
+		<list of="child">
+			<person>
+				<firstName>Grand'pa</firstName>
+				<lastName>Oiseau</lastName>
+				<gender>Male</gender>
+				<person relation="mother">
+					<firstName>Old'ma</firstName>
+					<lastName>Oiseau</lastName>
+					<gender>Female</gender>
+				</person>
+				<list of="child">
+					<person>
+						<firstName>Ara</firstName>
+						<lastName>Oiseau</lastName>
+						<gender>Male</gender>
+						<person relation="mother">
+							<firstName>Granny</firstName>
+							<lastName>Oiselle</lastName>
+							<gender>Female</gender>
+							<person relation="father">
+								<firstName>Old'pa</firstName>
+								<lastName>Oiselle</lastName>
+								<gender>Male</gender>
+							</person>
+							<person relation="mother">
+								<firstName>Old'ma</firstName>
+								<lastName>Oiselle</lastName>
+								<gender>Female</gender>
+							</person>
+							<list of="child">
+								<person>
+									<firstName>perroquet</firstName>
+									<lastName>oiseau</lastName>
+									<gender>Male</gender>
+									<person relation="child">
+										<firstName>moineau</firstName>
+										<lastName>oiseau</lastName>
+										<gender>Male</gender>
+										<person relation="mother">
+											<firstName>mésange</firstName>
+											<lastName>geai</lastName>
+											<gender>Female</gender>
+											<person relation="father">
+												<firstName>Grand'pa</firstName>
+												<lastName>Geai</lastName>
+												<gender>Male</gender>
+												<person relation="father">
+													<firstName>Old'pa</firstName>
+													<lastName>Geai</lastName>
+													<gender>Male</gender>
+												</person>
+												<person relation="mother">
+													<firstName>Old'ma</firstName>
+													<lastName>Geai</lastName>
+													<gender>Female</gender>
+												</person>
+											</person>
+											<person relation="mother">
+												<firstName>Granny</firstName>
+												<lastName>Mésange</lastName>
+												<gender>Female</gender>
+												<person relation="father">
+													<firstName>Old'pa</firstName>
+													<lastName>Mésange</lastName>
+													<gender>Male</gender>
+												</person>
+												<person relation="mother">
+													<firstName>Old'ma</firstName>
+													<lastName>Mésange</lastName>
+													<gender>Female</gender>
+												</person>
+											</person>
+											<person relation="child">
+												<firstName>alouette</firstName>
+												<lastName>oiseau</lastName>
+												<gender>Female</gender>
+											</person>
+											<person relation="child">
+												<firstName>Pélican</firstName>
+												<lastName>Oiseau</lastName>
+												<gender>Male</gender>
+											</person>
+											<person relation="child">
+												<firstName>Orphan</firstName>
+												<lastName>Of Father</lastName>
+												<gender>Other</gender>
+											</person>
+										</person>
+									</person>
+									<person relation="child">
+										<firstName>Orphan</firstName>
+										<lastName>Of Mother</lastName>
+										<gender>Unknown</gender>
+									</person>
+								</person>
+							</list>
+						</person>
+					</person>
+				</list>
+			</person>
+		</list>
+	</person>
+</oegendb>

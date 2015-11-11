@@ -30,7 +30,7 @@ implements ChangeListener, Iterable<Person> {
 
 	/*
 	 * !CodeTemplates.overridecomment.nonjd!
-	 * 
+	 *
 	 * @see java.util.Iterator#hasNext()
 	 */
 	@Override
@@ -40,7 +40,7 @@ implements ChangeListener, Iterable<Person> {
 
 	/*
 	 * !CodeTemplates.overridecomment.nonjd!
-	 * 
+	 *
 	 * @see java.util.Iterator#next()
 	 */
 	@Override
@@ -58,6 +58,15 @@ implements ChangeListener, Iterable<Person> {
     @Override
     public Iterator<Person> iterator() {
 	return new PersonListIterator();
+    }
+
+    public Person search(String id) {
+	// FIXME: in dire need of a hashmap
+	for(Person p : this)
+	    if(p.getId().equals(id))
+		return p;
+
+	return null;
     }
 
     @Override

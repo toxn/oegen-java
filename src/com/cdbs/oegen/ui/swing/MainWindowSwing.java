@@ -11,24 +11,34 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.io.xml.Exporter;
+import com.cdbs.oegen.data.io.xml.Importer;
 import com.cdbs.oegen.ui.Messages;
 
 /**
@@ -40,52 +50,90 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
      *
      */
     private static final long serialVersionUID = 1L;
+    /**
+     * True if data is in the same state as in the save file.
+     */
+    static boolean isSavedToDisk = true;
+    static JFileChooser fileChooser = new JFileChooser();
 
-    private final Action newAction = new CustomAction("New") { //$NON-NLS-1$
+    /**
+     * The file where the data originate. receives normal save.
+     */
+    static File saveFile = null;
+
+    private final CustomAction newAction = new CustomAction("New", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	    if (hasRequest()) {
+		Person.persons.clear();
+	    }
+	}
+
+    };
+
+    private final CustomAction openAction = new CustomAction("Open", //$NON-NLS-1$
+	    CustomAction.FLAG_CONFIRM | CustomAction.FLAG_REQUEST) {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    open();
+	}
+    };
+
+    private final CustomAction saveAction = new CustomAction("Save") { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    save();
+	}
+
+    };
+
+    private final CustomAction saveAsAction = new CustomAction("SaveAs", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    saveAs();
+	}
+
+    };
+
+    private final CustomAction quitAction = new CustomAction("Quit", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    if (hasRequest())
+		if (!saveRequest())
+		    return;
+
 	    System.exit(0);
-
-	}
-
-
-
-    };
-
-    private final Action openAction = new CustomAction("Open") { //$NON-NLS-1$
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    System.exit(0);
-
 	}
     };
-    private final Action saveAction = new CustomAction("Save") { //$NON-NLS-1$
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-	}
-
-    };
-
-    private final Action saveAsAction = new CustomAction("SaveAs") { //$NON-NLS-1$
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-	}
-
-    };
-
-    private final Action quitAction = new CustomAction("Quit") {
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    System.exit(0);
-
-	}
-    };
     /**
      * @throws HeadlessException
      */
@@ -101,6 +149,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 
 	fileMenu.add(newAction);
 	fileMenu.add(openAction);
+	fileMenu.addSeparator();
 	fileMenu.add(saveAction);
 	fileMenu.add(saveAsAction);
 	fileMenu.addSeparator();
@@ -388,5 +437,127 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 		}
 	    }
 	});
+
+	Person.persons.addListDataListener(new ListDataListener() {
+
+	    @Override
+	    public void contentsChanged(ListDataEvent e) {
+		// Database is not in synch with last save
+		dataChanged();
+	    }
+
+	    @Override
+	    public void intervalAdded(ListDataEvent e) {
+		// Database is not in synch with last save
+		dataChanged();
+	    }
+
+	    @Override
+	    public void intervalRemoved(ListDataEvent e) {
+		// Database is not in synch with last save
+		dataChanged();
+	    }
+	});
     }
+
+    void dataChanged() {
+	isSavedToDisk = false;
+
+	quitAction.setRequest(true);
+	saveAction.setRequest(true);
+
+	if (Person.persons.isEmpty()) {
+	    newAction.setEnabled(false);
+	} else {
+	    newAction.setRequest(true);
+	}
+    }
+
+    public void open() {
+	if (openAction.hasRequest())
+	    if (!saveRequest())
+		return;
+
+	int result = fileChooser.showOpenDialog(MainWindowSwing.this);
+
+	switch (result) {
+	case JFileChooser.APPROVE_OPTION:
+	    Person.persons.clear();
+	    try (FileInputStream fis = new FileInputStream(fileChooser.getSelectedFile())) {
+		new Importer(fis).doImport();
+		saveFile = fileChooser.getSelectedFile();
+	    } catch (FileNotFoundException e1) {
+		JOptionPane.showMessageDialog(MainWindowSwing.this, e1, Messages.getString("MainWindowSwing.DialogTitle.Error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+	    } catch (IOException e2) {
+		JOptionPane.showMessageDialog(MainWindowSwing.this, e2,
+			Messages.getString("MainWindowSwing.DialogTitle.Error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+	    }
+
+	    break;
+
+	case JFileChooser.CANCEL_OPTION:
+	case JFileChooser.ERROR_OPTION:
+	    return;
+	}
+    }
+
+    public void save() {
+	if (saveFile == null) {
+	    saveAs();
+	}
+
+	try (FileOutputStream fos = new FileOutputStream(saveFile)) {
+	    new Exporter(fos).doExport();
+	} catch (FileNotFoundException e1) {
+	    JOptionPane.showMessageDialog(MainWindowSwing.this, e1,
+		    Messages.getString("MainWindowSwing.DialogTitle.Error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+	} catch (IOException e2) {
+	    JOptionPane.showMessageDialog(MainWindowSwing.this, e2,
+		    Messages.getString("MainWindowSwing.DialogTitle.Error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+	}
+    }
+
+    public void saveAs() {
+	int result = fileChooser.showSaveDialog(MainWindowSwing.this);
+
+	switch (result) {
+	case JFileChooser.APPROVE_OPTION:
+	    saveFile = fileChooser.getSelectedFile();
+	    save();
+	    break;
+
+	case JFileChooser.CANCEL_OPTION:
+	case JFileChooser.ERROR_OPTION:
+	    return;
+	}
+    }
+
+    boolean saveRequest() {
+	String[] options = { Messages.getString("MainWindowSwing.DialogOption.Continue"), Messages.getString("MainWindowSwing.DialogOption.SaveFirst"), Messages.getString("MainWindowSwing.DialogOption.Cancel") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	int res = JOptionPane.showOptionDialog(MainWindowSwing.this,
+		Messages.getString("MainWindowSwing.DataLostWarning.Message"), //$NON-NLS-1$
+		Messages.getString("MainWindowSwing.DataLostWarning.Title"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, //$NON-NLS-1$
+		options[2]);
+
+	switch (res) {
+	case JOptionPane.CLOSED_OPTION:
+	    // Fallthrough
+	case 2:
+	    return false;
+
+	case 0: // Continue
+	    return true;
+
+	case 1: // Save first
+	    // Let's save
+	    save();
+	    // and proceed further
+	    return true;
+
+	default:
+	    // Shouldn't occur
+	    throw new RuntimeException();
+	}
+    }
+
 }

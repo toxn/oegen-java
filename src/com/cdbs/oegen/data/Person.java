@@ -40,8 +40,10 @@ public class Person
     public static final String PROPERTY_ID = "id"; //$NON-NLS-1$
 
     public static final String CLASSNAME = "person"; //$NON-NLS-1$
-    public static final String PROPERTY_CHILDREN = "children";
-    public static final String TAG_CHILD = "child";
+
+    public static final String PROPERTY_CHILDREN = "children"; //$NON-NLS-1$
+
+    public static final String TAG_CHILD = "child"; //$NON-NLS-1$
 
     public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -242,6 +244,6 @@ public class Person
     @Override
     public String toString()
     {
-	return firstName + " " + lastName + " [" + id + "]"; //$NON-NLS-1$
+	return firstName + " " + lastName; //$NON-NLS-1$
     }
 }
