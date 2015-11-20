@@ -21,15 +21,14 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.ListCellRenderer;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -40,6 +39,7 @@ import com.cdbs.oegen.data.Person;
 import com.cdbs.oegen.data.io.xml.Exporter;
 import com.cdbs.oegen.data.io.xml.Importer;
 import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonTableModel;
 
 /**
  * @author toxn
@@ -134,6 +134,8 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 	}
     };
 
+    private final PersonTableModel personsTableModel = new PersonTableModel(Person.persons);
+
     /**
      * @throws HeadlessException
      */
@@ -174,17 +176,12 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 
 	personListCard.add(personListButtons);
 
-	final JList<Person> personList = new JList<Person>(Person.persons);
-	personList.setCellRenderer(new ListCellRenderer<Person>() {
+	final JTable personTable = new JTable();
+	personTable.setModel(personsTableModel);
+	personTable.setAutoCreateRowSorter(true);
+	// personTable.setTableHeader(null);
 
-	    @Override
-	    public Component getListCellRendererComponent(JList<? extends Person> list, Person value, int index,
-		    boolean isSelected, boolean cellHasFocus) {
-		return new JLabel(value.toString());
-	    }
-	});
-
-	personListCard.add(personList);
+	personListCard.add(new JScrollPane(personTable));
 
 	/**
 	 * Display the relations of the person with others in the database.
@@ -407,16 +404,17 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 	});
 
 	// Disable Remove and prev/next card when nothing is selected in list
-	personList.addListSelectionListener(new ListSelectionListener() {
+	personTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 	    @Override
 	    public void valueChanged(ListSelectionEvent e) {
-		boolean bSelectionExists = !personList.isSelectionEmpty();
+		ListSelectionModel lsm = personTable.getSelectionModel();
+		boolean bSelectionExists = !lsm.isSelectionEmpty();
 		prevPersonViewBtn.setEnabled(bSelectionExists);
 		nextPersonViewBtn.setEnabled(bSelectionExists);
 		remPersonBtn.setEnabled(bSelectionExists);
 
-		personTree.setCenter(personList.getSelectedValue());
-		personEditorCard.setPerson(personList.getSelectedValue());
+		personTree.setCenter(Person.persons.elementAt(lsm.getLeadSelectionIndex()));
+		personEditorCard.setPerson(Person.persons.elementAt(lsm.getLeadSelectionIndex()));
 	    }
 	});
 

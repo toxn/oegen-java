@@ -59,6 +59,10 @@ public class PersonTableModel implements TableModel, ListDataListener {
 	    // Firstname
 	    return String.class;
 
+	case 2:
+	    // Id
+	    return String.class;
+
 	default:
 	    throw new RuntimeException(Messages.getString("PersonTableModel.InvalidColumnIndexException")); //$NON-NLS-1$
 	}
@@ -70,7 +74,7 @@ public class PersonTableModel implements TableModel, ListDataListener {
     @Override
     public int getColumnCount() {
 	// Columns are Last Name, First name.
-	return 2;
+	return 3;
     }
 
     @Override
@@ -84,9 +88,21 @@ public class PersonTableModel implements TableModel, ListDataListener {
 	    // Firstname
 	    return Messages.getString("Person.firstName"); //$NON-NLS-1$
 
+	case 2:
+	    // Id
+	    return Messages.getString("Oebject.Id"); //$NON-NLS-1$
+
 	default:
 	    throw new RuntimeException(Messages.getString("PersonTableModel.InvalidColumnIndexException")); //$NON-NLS-1$
 	}
+    }
+
+    public Person getPersonAt(int rowIndex) {
+	if (rowIndex < 0 || rowIndex >= persons.size())
+	    throw new RuntimeException(Messages.getString("PersonTableModel.InvalidRowIndexException")); //$NON-NLS-1$
+
+	return persons.get(rowIndex);
+
     }
 
     /*
@@ -117,6 +133,9 @@ public class PersonTableModel implements TableModel, ListDataListener {
 
 	case 1:
 	    return person.getFirstName();
+
+	case 2:
+	    return person.getId();
 	}
 
 	throw new RuntimeException(Messages.getString("PersonTableModel.InvalidColumnIndexException")); //$NON-NLS-1$
