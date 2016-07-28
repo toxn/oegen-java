@@ -61,7 +61,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
      */
     static File saveFile = null;
 
-    private final CustomAction newAction = new CustomAction("New", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
+    private final CustomAction newAction = new CustomAction("New") { //$NON-NLS-1$
 	/**
 	 *
 	 */
@@ -77,7 +77,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
     };
 
     private final CustomAction openAction = new CustomAction("Open", //$NON-NLS-1$
-	    CustomAction.FLAG_CONFIRM | CustomAction.FLAG_REQUEST) {
+	    CustomAction.FLAG_REQUEST) {
 	/**
 	 *
 	 */
@@ -89,7 +89,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 	}
     };
 
-    private final CustomAction saveAction = new CustomAction("Save") { //$NON-NLS-1$
+    private final CustomAction saveAction = new CustomAction("Save", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
 
 	/**
 	 *
@@ -466,13 +466,16 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 
 	if (Person.persons.isEmpty()) {
 	    newAction.setEnabled(false);
+            newAction.setRequest(false);
+            openAction.setRequest(false);
 	} else {
 	    newAction.setRequest(true);
+            openAction.setRequest(true);
 	}
     }
 
     public void open() {
-	if (openAction.hasRequest())
+	if (openAction.hasConfirm())
 	    if (!saveRequest())
 		return;
 
