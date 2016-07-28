@@ -233,8 +233,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 	personRelationsPrintButton.setEnabled(true);
 	personRelationsButtons.add(personRelationsPrintButton);
 
-	JComponent personSummary = new JPanel(); // TODO: implement custom
-	// component
+	final PersonRelations personSummary = new PersonRelations();
 	JScrollPane personSummaryScrollPane = new JScrollPane(personSummary);
 
 	final PersonTree personTree = new PersonTree();
@@ -413,8 +412,10 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow {
 		nextPersonViewBtn.setEnabled(bSelectionExists);
 		remPersonBtn.setEnabled(bSelectionExists);
 
-		personTree.setCenter(Person.persons.elementAt(lsm.getLeadSelectionIndex()));
-		personEditorCard.setPerson(Person.persons.elementAt(lsm.getLeadSelectionIndex()));
+		Person currentPerson = Person.persons.elementAt(lsm.getLeadSelectionIndex());
+		personSummary.setCenter(currentPerson);
+		personTree.setCenter(currentPerson);
+		personEditorCard.setPerson(currentPerson);
 	    }
 	});
 
