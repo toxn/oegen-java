@@ -3,6 +3,12 @@
  */
 package com.cdbs.oegen.ui.swing;
 
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.io.xml.Exporter;
+import com.cdbs.oegen.data.io.xml.Importer;
+import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonTableModel;
+import com.cdbs.oegen.ui.swing.PersonSummary.PersonClickListener;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.HeadlessException;
@@ -11,44 +17,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import com.cdbs.oegen.data.Person;
-import com.cdbs.oegen.data.io.xml.Exporter;
-import com.cdbs.oegen.data.io.xml.Importer;
-import com.cdbs.oegen.ui.Messages;
-import com.cdbs.oegen.ui.PersonTableModel;
-import com.cdbs.oegen.ui.swing.PersonSummary.PersonClickListener;
-import static java.awt.Frame.ICONIFIED;
-import static java.awt.image.ImageObserver.WIDTH;
 
 /**
  * @author toxn
  *
  */
-public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implements PersonClickListener {
+public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implements ActionListener, PersonClickListener {
     /**
      *
      */
@@ -58,6 +39,9 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
      */
     static boolean isSavedToDisk = true;
     static JFileChooser fileChooser = new JFileChooser();
+
+    private static final String CMD_ADD_PERSON = "ADD PERSON";
+    private static final String CMD_REMOVE_PERSON = "REMOVE PERSON";
 
     /**
      * The file where the data originate. receives normal save.
@@ -150,321 +134,311 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     public void buildUI() {
         JMenuBar menuBar = new JMenuBar();
-	setJMenuBar(menuBar);
+        setJMenuBar(menuBar);
 
-	JMenu fileMenu = new JMenu(Messages.getString("MainWindowSwing.FileMenu")); //$NON-NLS-1$
-	fileMenu.setMnemonic(KeyEvent.VK_F);
-	menuBar.add(fileMenu);
+        JMenu fileMenu = new JMenu(Messages.getString("MainWindowSwing.FileMenu")); //$NON-NLS-1$
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        menuBar.add(fileMenu);
 
-	fileMenu.add(newAction);
-	fileMenu.add(openAction);
-	fileMenu.addSeparator();
-	fileMenu.add(saveAction);
-	fileMenu.add(saveAsAction);
-	fileMenu.addSeparator();
-	fileMenu.add(quitAction);
+        fileMenu.add(newAction);
+        fileMenu.add(openAction);
+        fileMenu.addSeparator();
+        fileMenu.add(saveAction);
+        fileMenu.add(saveAsAction);
+        fileMenu.addSeparator();
+        fileMenu.add(quitAction);
 
-	/**
-	 * Contains a list of persons along with a toolbar to create, delete or
-	 * filter
-	 */
-	Box personListCard = Box.createVerticalBox();
-	Box personListButtons = Box.createHorizontalBox();
+        /**
+         * Contains a list of persons along with a toolbar to create, delete or
+         * filter
+         */
+        Box personListCard = Box.createVerticalBox();
+        Box personListButtons = Box.createHorizontalBox();
 
-	JButton addPersonBtn = new JButton("+"); //$NON-NLS-1$
-	personListButtons.add(addPersonBtn);
+        JButton addPersonBtn = new JButton("+"); //$NON-NLS-1$
+        addPersonBtn.setActionCommand(CMD_ADD_PERSON);
+        personListButtons.add(addPersonBtn);
+        addPersonBtn.addActionListener(this);
 
-	final JButton remPersonBtn = new JButton("×"); //$NON-NLS-1$
-	remPersonBtn.setEnabled(false);
-	personListButtons.add(remPersonBtn);
+        final JButton remPersonBtn = new JButton("×"); //$NON-NLS-1$
+        remPersonBtn.setEnabled(false);
+        remPersonBtn.setActionCommand(CMD_REMOVE_PERSON);
+        remPersonBtn.addActionListener(this);
+        personListButtons.add(remPersonBtn);
 
-	JButton searchPersonBtn = new JButton(Messages.getString("MainWindow.Search")); //$NON-NLS-1$
-	personListButtons.add(searchPersonBtn);
+        JButton searchPersonBtn = new JButton(Messages.getString("MainWindow.Search")); //$NON-NLS-1$
+        personListButtons.add(searchPersonBtn);
 
-	personListCard.add(personListButtons);
+        personListCard.add(personListButtons);
 
-	personTable.setModel(personsTableModel);
-	personTable.setAutoCreateRowSorter(true);
-	// personTable.setTableHeader(null);
+        personTable.setModel(personsTableModel);
+        personTable.setAutoCreateRowSorter(true);
+        // personTable.setTableHeader(null);
 
-	personListCard.add(new JScrollPane(personTable));
+        personListCard.add(new JScrollPane(personTable));
 
-	/**
-	 * Display the relations of the person with others in the database.
-	 *
-	 * There is 3 modes of display : - a textual display summarying parents,
-	 * siblings and children along with spouses, - a tree centering on the
-	 * current person and displaying ascendant and/or descendant. Buttons
-	 * control zoom level (eg number of ascending and descending
-	 * generations) - a wheel centering on the current person and displaying
-	 * ascendant and/or descendant. Buttons control zoom level (eg number of
-	 * ascending and descending generations)
-	 */
-	Box personRelationsCard = Box.createVerticalBox();
+        /**
+         * Display the relations of the person with others in the database.
+         *
+         * There is 3 modes of display : - a textual display summarying parents,
+         * siblings and children along with spouses, - a tree centering on the
+         * current person and displaying ascendant and/or descendant. Buttons
+         * control zoom level (eg number of ascending and descending
+         * generations) - a wheel centering on the current person and displaying
+         * ascendant and/or descendant. Buttons control zoom level (eg number of
+         * ascending and descending generations)
+         */
+        Box personRelationsCard = Box.createVerticalBox();
 
-	Box personRelationsButtons = Box.createHorizontalBox();
-	personRelationsCard.add(personRelationsButtons);
+        Box personRelationsButtons = Box.createHorizontalBox();
+        personRelationsCard.add(personRelationsButtons);
 
-	final JButton personRelationsTextButton = new JButton(Messages.getString("MainWindow.Text")); //$NON-NLS-1$
-	personRelationsTextButton.setEnabled(false);
-	personRelationsButtons.add(personRelationsTextButton, Component.LEFT_ALIGNMENT);
+        final JButton personRelationsTextButton = new JButton(Messages.getString("MainWindow.Text")); //$NON-NLS-1$
+        personRelationsTextButton.setEnabled(false);
+        personRelationsButtons.add(personRelationsTextButton, Component.LEFT_ALIGNMENT);
 
-	final JButton personRelationsTreeButton = new JButton(Messages.getString("MainWindow.Tree")); //$NON-NLS-1$
-	personRelationsTreeButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsTreeButton, Component.LEFT_ALIGNMENT);
+        final JButton personRelationsTreeButton = new JButton(Messages.getString("MainWindow.Tree")); //$NON-NLS-1$
+        personRelationsTreeButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsTreeButton, Component.LEFT_ALIGNMENT);
 
-	final JButton personRelationsWheelButton = new JButton(Messages.getString("MainWindow.Wheel")); //$NON-NLS-1$
-	personRelationsWheelButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsWheelButton, Component.LEFT_ALIGNMENT);
+        final JButton personRelationsWheelButton = new JButton(Messages.getString("MainWindow.Wheel")); //$NON-NLS-1$
+        personRelationsWheelButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsWheelButton, Component.LEFT_ALIGNMENT);
 
-	personRelationsButtons.add(Box.createHorizontalGlue());
+        personRelationsButtons.add(Box.createHorizontalGlue());
 
-	final JButton personRelationsZoomInButton = new JButton("+"); //$NON-NLS-1$
-	personRelationsZoomInButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsZoomInButton, Component.RIGHT_ALIGNMENT);
+        final JButton personRelationsZoomInButton = new JButton("+"); //$NON-NLS-1$
+        personRelationsZoomInButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsZoomInButton, Component.RIGHT_ALIGNMENT);
 
-	final JButton personRelationsZoomOutButton = new JButton("-"); //$NON-NLS-1$
-	personRelationsZoomOutButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsZoomOutButton, Component.RIGHT_ALIGNMENT);
+        final JButton personRelationsZoomOutButton = new JButton("-"); //$NON-NLS-1$
+        personRelationsZoomOutButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsZoomOutButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsRotateLeftButton = new JButton("<-\\"); //$NON-NLS-1$
-	personRelationsRotateLeftButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsRotateLeftButton, Component.RIGHT_ALIGNMENT);
+        JButton personRelationsRotateLeftButton = new JButton("<-\\"); //$NON-NLS-1$
+        personRelationsRotateLeftButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsRotateLeftButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsRotateRightButton = new JButton("/->"); //$NON-NLS-1$
-	personRelationsRotateRightButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsRotateRightButton, Component.RIGHT_ALIGNMENT);
+        JButton personRelationsRotateRightButton = new JButton("/->"); //$NON-NLS-1$
+        personRelationsRotateRightButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsRotateRightButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsPrintButton = new JButton(Messages.getString("MainWindow.Print")); //$NON-NLS-1$
-	personRelationsPrintButton.setEnabled(true);
-	personRelationsButtons.add(personRelationsPrintButton);
+        JButton personRelationsPrintButton = new JButton(Messages.getString("MainWindow.Print")); //$NON-NLS-1$
+        personRelationsPrintButton.setEnabled(true);
+        personRelationsButtons.add(personRelationsPrintButton);
 
-	final PersonSummary personSummary = new PersonSummary();
-	JScrollPane personSummaryScrollPane = new JScrollPane(personSummary);
+        final PersonSummary personSummary = new PersonSummary();
+        JScrollPane personSummaryScrollPane = new JScrollPane(personSummary);
 
         personSummary.addPersonClickListener(this);
         
-	final PersonTree personTree = new PersonTree();
-	JScrollPane personTreeScrollPane = new JScrollPane(personTree);
-        
-	final JComponent personWheel = new JPanel(); // TODO implement a custom
-	// component
-	JScrollPane personWheelScrollPane = new JScrollPane(personWheel);
+        final PersonTree personTree = new PersonTree();
+        JScrollPane personTreeScrollPane = new JScrollPane(personTree);
 
-	final JPanel personRelationsPanel = new JPanel(new CardLayout());
+        final JComponent personWheel = new JPanel(); // TODO implement a custom
+        // component
+        JScrollPane personWheelScrollPane = new JScrollPane(personWheel);
 
-	final String relationsCommandText = "TEXT"; //$NON-NLS-1$
-	final String relationsCommandTree = "TREE"; //$NON-NLS-1$
-	final String relationsCommandWheel = "WHEEL"; //$NON-NLS-1$
+        final JPanel personRelationsPanel = new JPanel(new CardLayout());
 
-	personRelationsPanel.add(personSummaryScrollPane, relationsCommandText);
-	personRelationsPanel.add(personTreeScrollPane, relationsCommandTree);
-	personRelationsPanel.add(personWheelScrollPane, relationsCommandWheel);
+        final String relationsCommandText = "TEXT"; //$NON-NLS-1$
+        final String relationsCommandTree = "TREE"; //$NON-NLS-1$
+        final String relationsCommandWheel = "WHEEL"; //$NON-NLS-1$
 
-	((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandText);
+        personRelationsPanel.add(personSummaryScrollPane, relationsCommandText);
+        personRelationsPanel.add(personTreeScrollPane, relationsCommandTree);
+        personRelationsPanel.add(personWheelScrollPane, relationsCommandWheel);
 
-	personRelationsTextButton.addActionListener(new ActionListener() {
+        ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandText);
 
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		personRelationsTextButton.setEnabled(false);
-		personRelationsTreeButton.setEnabled(true);
-		personRelationsWheelButton.setEnabled(true);
+        personRelationsTextButton.addActionListener(new ActionListener() {
 
-		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandText);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                personRelationsTextButton.setEnabled(false);
+                personRelationsTreeButton.setEnabled(true);
+                personRelationsWheelButton.setEnabled(true);
 
-	    }
-	});
+                ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandText);
 
-	personRelationsTreeButton.addActionListener(new ActionListener() {
+            }
+        });
 
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		personRelationsTextButton.setEnabled(true);
-		personRelationsTreeButton.setEnabled(false);
-		personRelationsWheelButton.setEnabled(true);
+        personRelationsTreeButton.addActionListener(new ActionListener() {
 
-		CardLayout cl = (CardLayout) personRelationsPanel.getLayout();
-		cl.show(personRelationsPanel, relationsCommandTree);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                personRelationsTextButton.setEnabled(true);
+                personRelationsTreeButton.setEnabled(false);
+                personRelationsWheelButton.setEnabled(true);
 
-	    }
-	});
+                CardLayout cl = (CardLayout) personRelationsPanel.getLayout();
+                cl.show(personRelationsPanel, relationsCommandTree);
 
-	personRelationsWheelButton.addActionListener(new ActionListener() {
+            }
+        });
 
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		personRelationsTextButton.setEnabled(true);
-		personRelationsTreeButton.setEnabled(true);
-		personRelationsWheelButton.setEnabled(false);
+        personRelationsWheelButton.addActionListener(new ActionListener() {
 
-		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandWheel);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                personRelationsTextButton.setEnabled(true);
+                personRelationsTreeButton.setEnabled(true);
+                personRelationsWheelButton.setEnabled(false);
 
-	    }
-	});
-	personRelationsZoomInButton.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		try {
-		    personTree.setGenerations(personTree.getGenerations() + 1);
-		    // personWheel.setGenerations(personWheel.getGenerations() +
-		    // 1);
-		    personRelationsZoomOutButton.setEnabled(true);
-		} catch (Exception ex) {
-		    throw new RuntimeException(ex);
-		}
-	    }
-	});
+                ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandWheel);
 
-	personRelationsZoomOutButton.addActionListener(new ActionListener() {
+            }
+        });
+        personRelationsZoomInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    personTree.setGenerations(personTree.getGenerations() + 1);
+                    // personWheel.setGenerations(personWheel.getGenerations() +
+                    // 1);
+                    personRelationsZoomOutButton.setEnabled(true);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		try {
-		    int newZoomLevel = personTree.getGenerations() - 1;
+        personRelationsZoomOutButton.addActionListener(new ActionListener() {
 
-		    if (newZoomLevel == 1) {
-			personRelationsZoomOutButton.setEnabled(false);
-		    }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int newZoomLevel = personTree.getGenerations() - 1;
 
-		    personTree.setGenerations(newZoomLevel);
-		    // personWheel.setGenerations(newZoomLevel);
-		} catch (Exception ex) {
-		    throw new RuntimeException(ex);
-		}
+                if (newZoomLevel == 1) {
+                    personRelationsZoomOutButton.setEnabled(false);
+                }
 
-	    }
-	});
+                    personTree.setGenerations(newZoomLevel);
+                    // personWheel.setGenerations(newZoomLevel);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
 
-	personRelationsCard.add(personRelationsPanel);
-	/**
-	 * Enable fine editing of person's details such as name, events and
-	 * relations
-	 */
-	final PersonEditor personEditorCard = new PersonEditor();
+            }
+        });
 
-	JScrollPane personEditorScrollPane = new JScrollPane(personEditorCard);
+        personRelationsCard.add(personRelationsPanel);
+        /**
+         * Enable fine editing of person's details such as name, events and
+         * relations
+         */
+        final PersonEditor personEditorCard = new PersonEditor();
 
-	/**
-	 * The type of person view (3 types : list, graphical, details)
-	 */
-	Box personViewPane = Box.createHorizontalBox();
+        JScrollPane personEditorScrollPane = new JScrollPane(personEditorCard);
 
-	/**
-	 * A button that switchs from person Details to person graph, or from
-	 * person graph to person list
-	 */
-	final JButton prevPersonViewBtn = new JButton("<"); //$NON-NLS-1$
-	prevPersonViewBtn.setEnabled(false);
-	personViewPane.add(prevPersonViewBtn);
+        /**
+         * The type of person view (3 types : list, graphical, details)
+         */
+        Box personViewPane = Box.createHorizontalBox();
 
-	/**
-	 * The container that displays list, graph or detail view
-	 */
-	final JPanel personViewPanel = new JPanel(new CardLayout());
+        /**
+         * A button that switchs from person Details to person graph, or from
+         * person graph to person list
+         */
+        final JButton prevPersonViewBtn = new JButton("<"); //$NON-NLS-1$
+        prevPersonViewBtn.setEnabled(false);
+        personViewPane.add(prevPersonViewBtn);
 
-	final String personCardCommandList = "LIST"; //$NON-NLS-1$
-	final String personCardCommandGraph = "GRAPH"; //$NON-NLS-1$
-	final String personCardCommandDetails = "DETAILS"; //$NON-NLS-1$
+        /**
+         * The container that displays list, graph or detail view
+         */
+        final JPanel personViewPanel = new JPanel(new CardLayout());
 
-	personViewPanel.add(personListCard, personCardCommandList);
-	personViewPanel.add(personRelationsCard, personCardCommandGraph);
-	personViewPanel.add(personEditorScrollPane, personCardCommandDetails);
-	personViewPane.add(personViewPanel);
+        final String personCardCommandList = "LIST"; //$NON-NLS-1$
+        final String personCardCommandGraph = "GRAPH"; //$NON-NLS-1$
+        final String personCardCommandDetails = "DETAILS"; //$NON-NLS-1$
 
-	/**
-	 * A button than switches from person list to person graph or from
-	 * person graph to person details
-	 */
-	final JButton nextPersonViewBtn = new JButton(">"); //$NON-NLS-1$
-	nextPersonViewBtn.setEnabled(false);
-	personViewPane.add(nextPersonViewBtn);
+        personViewPanel.add(personListCard, personCardCommandList);
+        personViewPanel.add(personRelationsCard, personCardCommandGraph);
+        personViewPanel.add(personEditorScrollPane, personCardCommandDetails);
+        personViewPane.add(personViewPanel);
 
-	/**
-	 * This permits to select type of object the user wants to work with
-	 * (Person, Place, Source, etc)
-	 *
-	 */
-	JTabbedPane objectPane = new JTabbedPane(SwingConstants.LEFT);
-	objectPane.addTab(Messages.getString("Person.Person"), personViewPane); //$NON-NLS-1$
+        /**
+         * A button than switches from person list to person graph or from
+         * person graph to person details
+         */
+        final JButton nextPersonViewBtn = new JButton(">"); //$NON-NLS-1$
+        nextPersonViewBtn.setEnabled(false);
+        personViewPane.add(nextPersonViewBtn);
 
-	// getContentPane().add(new JScrollPane(objectPane));
-	getContentPane().add(objectPane);
+        /**
+         * This permits to select type of object the user wants to work with
+         * (Person, Place, Source, etc)
+         *
+         */
+        JTabbedPane objectPane = new JTabbedPane(SwingConstants.LEFT);
+        objectPane.addTab(Messages.getString("Person.Person"), personViewPane); //$NON-NLS-1$
 
-	// Various notifications and triggers
-	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        // getContentPane().add(new JScrollPane(objectPane));
+        getContentPane().add(objectPane);
 
-	// Connect the button to the Cards
-	prevPersonViewBtn.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		((CardLayout) personViewPanel.getLayout()).previous(personViewPanel);
+        // Various notifications and triggers
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-	    }
-	});
+        // Connect the button to the Cards
+        prevPersonViewBtn.addActionListener((ActionEvent e) -> {
+            ((CardLayout) personViewPanel.getLayout()).previous(personViewPanel);
+        });
 
-	nextPersonViewBtn.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		((CardLayout) personViewPanel.getLayout()).next(personViewPanel);
-	    }
-	});
+        nextPersonViewBtn.addActionListener((ActionEvent e) -> {
+            ((CardLayout) personViewPanel.getLayout()).next(personViewPanel);
+        });
 
-	// Disable Remove and prev/next card when nothing is selected in list
-	personTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-	    @Override
-	    public void valueChanged(ListSelectionEvent e) {
-		ListSelectionModel lsm = personTable.getSelectionModel();
-		boolean bSelectionExists = !lsm.isSelectionEmpty();
-		prevPersonViewBtn.setEnabled(bSelectionExists);
-		nextPersonViewBtn.setEnabled(bSelectionExists);
-		remPersonBtn.setEnabled(bSelectionExists);
+        // Disable Remove and prev/next card when nothing is selected in list
+        personTable.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+            ListSelectionModel lsm = personTable.getSelectionModel();
+            boolean bSelectionExists = !lsm.isSelectionEmpty();
+            prevPersonViewBtn.setEnabled(bSelectionExists);
+            nextPersonViewBtn.setEnabled(bSelectionExists);
+            remPersonBtn.setEnabled(bSelectionExists);
 
-		Person currentPerson = Person.persons.elementAt(lsm.getLeadSelectionIndex());
-		personSummary.setCenter(currentPerson);
-		personTree.setCenter(currentPerson);
-		personEditorCard.setPerson(currentPerson);
-	    }
-	});
+            Person currentPerson = Person.persons.elementAt(lsm.getLeadSelectionIndex());
+            personSummary.setCenter(currentPerson);
+            personTree.setCenter(currentPerson);
+            personEditorCard.setPerson(currentPerson);
+        });
 
-	personRelationsPrintButton.addActionListener(new ActionListener() {
+        personRelationsPrintButton.addActionListener((ActionEvent e) -> {
+            PrinterJob pJob = PrinterJob.getPrinterJob();
+            pJob.setPrintable(personTree);
+            boolean doPrint = pJob.printDialog();
 
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		PrinterJob pJob = PrinterJob.getPrinterJob();
-		pJob.setPrintable(personTree);
-		boolean doPrint = pJob.printDialog();
+            if (doPrint) {
+                try {
+                    pJob.print();
+                } catch (PrinterException ex) {
+                    System.err.println(ex);
+                }
+            }
+        });
 
-		if (doPrint) {
-		    try {
-			pJob.print();
-		    } catch (PrinterException ex) {
-			System.err.println(ex);
-		    }
-		}
-	    }
-	});
+        Person.persons.addListDataListener(new ListDataListener() {
 
-	Person.persons.addListDataListener(new ListDataListener() {
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+                // Database is not in synch with last save
+                dataChanged();
+            }
 
-	    @Override
-	    public void contentsChanged(ListDataEvent e) {
-		// Database is not in synch with last save
-		dataChanged();
-	    }
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+                // Database is not in synch with last save
+                dataChanged();
+            }
 
-	    @Override
-	    public void intervalAdded(ListDataEvent e) {
-		// Database is not in synch with last save
-		dataChanged();
-	    }
-
-	    @Override
-	    public void intervalRemoved(ListDataEvent e) {
-		// Database is not in synch with last save
-		dataChanged();
-	    }
-	});
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+                // Database is not in synch with last save
+                dataChanged();
+            }
+        });
 
     }
     
@@ -584,5 +558,26 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
     @Override
     public void personClick(PersonSummary.PersonClickEvent pce) {
         jumpTo(pce.getPerson());
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case CMD_ADD_PERSON:
+                Person newPerson = new Person();
+                 {
+                    try {
+                        personTable.requestFocusInWindow();
+                        personTable.editCellAt(personTable.convertRowIndexToView(personsTableModel.getRowOf(newPerson)), 0);
+                    } catch (Exception ex) {
+                        Logger.getLogger(MainWindowSwing.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+
+            case CMD_REMOVE_PERSON:
+                Person currentPerson = Person.persons.elementAt(personTable.getSelectedRow());
+                Person.persons.removeElement(currentPerson);
+        }
     }
 }
