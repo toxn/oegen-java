@@ -135,12 +135,13 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	// Create style sheet
 	((HTMLDocument) textPane.getDocument()).getStyleSheet()
-	.addRule("." + Person.PROPERTY_LASTNAME + " { font-variant: small-caps; }");
+                .addRule("." + Person.PROPERTY_LASTNAME + " { font-variant: small-caps; }");
 
 	// Insert default text
 	textPane.setText(defaultText);
         
         textPane.addHyperlinkListener(this);
+
 
 	this.add(textPane);
 

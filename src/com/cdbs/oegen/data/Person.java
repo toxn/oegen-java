@@ -25,16 +25,27 @@ public class Person
         return siblings;
     }
     public enum Gender {
-	Unknown, Male, Female, Other
-    }
+	Unknown("?"), //$NON-NLS-1$
+	Male("\u2642"), //$NON-NLS-1$
+	Female("\u2640"), //$NON-NLS-1$
+	Other("\u26A7"); //$NON-NLS-1$
 
+	private final String symbol;
+
+	Gender(String symbol) {
+	    this.symbol = symbol;
+	}
+	public String getSymbol() {
+	    return symbol;
+	}
+    }
     public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
 
     private SiblingList siblings = null;
     
     public static PersonListModel persons = new PersonListModel();
-    public static HashMap<String, Person> indexId = new HashMap<>();
 
+    public static HashMap<String, Person> indexId = new HashMap<>();
     public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
 
     public static final String PROPERTY_FIRSTNAME = "firstName"; //$NON-NLS-1$

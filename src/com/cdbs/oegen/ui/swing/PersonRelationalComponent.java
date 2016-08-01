@@ -11,13 +11,8 @@ import com.cdbs.oegen.data.Person;
  * @author toxn
  *
  */
-public abstract class PersonRelationalComponent extends JComponent {
-
-    public enum Scope {
-	ASCENDANTS, // Display only center and ascendants
-	DESCENDANTS, // Display only center and descendants
-	BOTH // Display center and both ascendants and descendants
-    }
+public abstract class PersonRelationalComponent extends JComponent
+implements com.cdbs.oegen.ui.PersonRelationalComponent {
 
     /**
      *
