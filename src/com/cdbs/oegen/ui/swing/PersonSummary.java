@@ -11,7 +11,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 
 import com.cdbs.oegen.data.Person;
-import com.cdbs.oegen.ui.PersonListModel;
+import com.cdbs.oegen.ui.PersonList;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.EventObject;
@@ -71,7 +71,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
         }
     }
     
-    private static String personListToHtmlList(PersonListModel children) {
+    private static String personListToHtmlList(PersonList children) {
 	String result = ""; //$NON-NLS-1$
 
 	if (children == null)
