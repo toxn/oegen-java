@@ -3,6 +3,12 @@
  */
 package com.cdbs.oegen.ui.swing;
 
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.io.xml.Exporter;
+import com.cdbs.oegen.data.io.xml.Importer;
+import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonTableModel;
+import com.cdbs.oegen.ui.swing.PersonSummary.PersonClickListener;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.HeadlessException;
@@ -11,38 +17,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import java.io.*;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import com.cdbs.oegen.data.Person;
-import com.cdbs.oegen.data.io.xml.Exporter;
-import com.cdbs.oegen.data.io.xml.Importer;
-import com.cdbs.oegen.ui.Messages;
-import com.cdbs.oegen.ui.PersonTableModel;
-import com.cdbs.oegen.ui.swing.PersonSummary.PersonClickListener;
-import static java.awt.Frame.ICONIFIED;
-import static java.awt.image.ImageObserver.WIDTH;
 
 /**
  * @author toxn

@@ -3,14 +3,13 @@
  */
 package com.cdbs.oegen.data;
 
+import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonList;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.UUID;
-
 import javax.swing.event.ChangeEvent;
-
-import com.cdbs.oegen.ui.PersonListModel;
 
 /**
  * @author toxn
@@ -18,32 +17,44 @@ import com.cdbs.oegen.ui.PersonListModel;
  */
 public class Person
 {
-    public PersonListModel getSiblings() {
+    public PersonList getSiblings() {
         if(siblings == null)
             siblings = new SiblingList(this);
         
         return siblings;
     }
     public enum Gender {
-	Unknown("?"), //$NON-NLS-1$
-	Male("\u2642"), //$NON-NLS-1$
-	Female("\u2640"), //$NON-NLS-1$
-	Other("\u26A7"); //$NON-NLS-1$
+        Unknown(Messages.getString("Person.Gender.Unknown"), "?"), //$NON-NLS-2$
+        Male(Messages.getString("Person.Gender.Male"), "\u2642"), //$NON-NLS-2$
+        Female(Messages.getString("Person.Gender.Female"), "\u2640"), //$NON-NLS-2$
+        Other(Messages.getString("Person.Gender.Other"), "\u26A7"); //$NON-NLS-2$
 
-	private final String symbol;
+        private final String symbol;
+        private final String nlsName;
 
-	Gender(String symbol) {
-	    this.symbol = symbol;
-	}
-	public String getSymbol() {
-	    return symbol;
-	}
+        Gender(String nlsName, String symbol) {
+            this.nlsName = nlsName;
+            this.symbol = symbol;
+        }
+
+        public final String getSymbol() {
+            return symbol;
+        }
+
+        public final String getNlsName() {
+            return nlsName;
+        }
+
+        @Override
+        public String toString() {
+            return nlsName;
+        }
     }
     public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
 
     private SiblingList siblings = null;
     
-    public static PersonListModel persons = new PersonListModel();
+    public static PersonList persons = new PersonList();
 
     public static HashMap<String, Person> indexId = new HashMap<>();
     public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
@@ -66,7 +77,7 @@ public class Person
 
     public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    public PersonListModel children = new PersonListModel();
+    public PersonList children = new PersonList();
     private Gender gender = Gender.Unknown;
 
     private String firstName = ""; //$NON-NLS-1$
@@ -202,7 +213,7 @@ public class Person
     }
 
     /**
-     * @param id le id à définir
+     * @param newValue le id à définir
      */
     public void setId(String newValue) {
 	String newId = newValue;
