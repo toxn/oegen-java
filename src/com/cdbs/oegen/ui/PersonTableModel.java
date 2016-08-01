@@ -104,6 +104,19 @@ public class PersonTableModel implements TableModel, ListDataListener {
 	return persons.get(rowIndex);
 
     }
+    
+    public int getRowOf(Person person) throws Exception {
+        int i = 0;
+        
+        for(Person p : persons) {
+            if(p == person)
+                return i;
+            
+            ++i;
+        }
+        
+        throw new Exception();
+    }
 
     /*
      * !CodeTemplates.overridecomment.nonjd!

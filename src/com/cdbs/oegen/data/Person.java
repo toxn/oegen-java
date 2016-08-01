@@ -18,12 +18,20 @@ import com.cdbs.oegen.ui.PersonListModel;
  */
 public class Person
 {
+    public PersonListModel getSiblings() {
+        if(siblings == null)
+            siblings = new SiblingList(this);
+        
+        return siblings;
+    }
     public enum Gender {
 	Unknown, Male, Female, Other
     }
 
     public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
 
+    private SiblingList siblings = null;
+    
     public static PersonListModel persons = new PersonListModel();
     public static HashMap<String, Person> indexId = new HashMap<>();
 

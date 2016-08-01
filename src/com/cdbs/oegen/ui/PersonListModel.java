@@ -18,7 +18,7 @@ import com.cdbs.oegen.data.Person;
  * @author toxn
  *
  */
-public final class PersonListModel
+public class PersonListModel
 extends DefaultListModel<Person>
 implements ChangeListener, Iterable<Person> {
     /**
