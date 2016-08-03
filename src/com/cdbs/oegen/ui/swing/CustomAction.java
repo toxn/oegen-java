@@ -56,7 +56,7 @@ public abstract class CustomAction extends AbstractAction {
     public Object getValue(String key) {
 	switch (key) {
 	case Action.NAME:
-	    return Messages.getString(PREFIX + m_ActionName + SUFFIX_NAME) + (m_Request ? "…" : ""); //$NON-NLS-1$ //$NON-NLS-2$
+	    return Messages.getString(PREFIX + m_ActionName + SUFFIX_NAME) + (m_Request ? "\u2026" : ""); //$NON-NLS-1$ //$NON-NLS-2$
 
 	case Action.MNEMONIC_KEY:
 	    try {
