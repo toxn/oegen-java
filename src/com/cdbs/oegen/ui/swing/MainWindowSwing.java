@@ -3,26 +3,45 @@
  */
 package com.cdbs.oegen.ui.swing;
 
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import com.cdbs.oegen.data.Person;
 import com.cdbs.oegen.data.io.xml.Exporter;
 import com.cdbs.oegen.data.io.xml.Importer;
 import com.cdbs.oegen.ui.Messages;
 import com.cdbs.oegen.ui.PersonTableModel;
 import com.cdbs.oegen.ui.swing.PersonSummary.PersonClickListener;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  * @author toxn
@@ -33,17 +52,29 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
      *
      */
     private static final long serialVersionUID = 1L;
+    static JFileChooser fileChooser = new JFileChooser();
     /**
      * True if data is in the same state as in the save file.
      */
     static boolean isSavedToDisk = true;
-    static JFileChooser fileChooser = new JFileChooser();
 
     /**
      * The file where the data originate. receives normal save.
      */
     static File saveFile = null;
-    private final JTable personTable;
+    private final CustomAction createPersonAction = new CustomAction("Person.Create") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    // TODO Auto-generated method stub
+
+	}
+    };
     private final CustomAction newAction = new CustomAction("New") { //$NON-NLS-1$
 	/**
 	 *
@@ -72,7 +103,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	}
     };
 
-    private final CustomAction saveAction = new CustomAction("Save", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
+    private final CustomAction personNextViewAction = new CustomAction("Person.View.Next") {
 
 	/**
 	 *
@@ -81,12 +112,12 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    save();
+	    ((CardLayout) personViewPanel.getLayout()).next(personViewPanel);
 	}
 
     };
 
-    private final CustomAction saveAsAction = new CustomAction("SaveAs", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
+    private final CustomAction personPrevViewAction = new CustomAction("Person.View.Prev") {
 
 	/**
 	 *
@@ -95,11 +126,162 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    saveAs();
+	    ((CardLayout) personViewPanel.getLayout()).previous(personViewPanel);
 	}
 
     };
 
+    private JPanel personRelationsPanel;
+
+    private final CustomAction personRelationsPrintAction = new CustomAction("Person.Relations.Print") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    PrinterJob pJob = PrinterJob.getPrinterJob();
+	    pJob.setPrintable(personTree);
+	    boolean doPrint = pJob.printDialog();
+
+	    if (doPrint) {
+		try {
+		    pJob.print();
+		} catch (PrinterException ex) {
+		    System.err.println(ex);
+		}
+	    }
+	}
+
+    };
+
+    private final CustomAction personRelationsRotateLeftAction = new CustomAction("Person.Relations.Rotate.Left") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+	}
+
+    };
+
+    private final CustomAction personRelationsRotateRightAction = new CustomAction("Person.Relations.Rotate.Right") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+	}
+
+    };
+
+    private final CustomAction personRelationsShowTextAction = new CustomAction("Person.Relations.Show.Text") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, getActionCommand());
+
+	}
+
+    };
+
+    private final CustomAction personRelationsShowTreeAction = new CustomAction("Person.Relations.Show.Tree") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, getActionCommand());
+
+	}
+
+    };
+
+    private final CustomAction personRelationsShowWheelAction = new CustomAction("Person.Relations.Show.Wheel") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, getActionCommand());
+
+	}
+
+    };
+
+    private final CustomAction personRelationsZoomInAction = new CustomAction("Person.Relations.Zoom.In") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    try {
+		int newZoomLevel = personTree.getGenerations() - 1;
+
+		if (newZoomLevel == 1) {
+		    personRelationsZoomInAction.setEnabled(false);
+		}
+
+		personTree.setGenerations(newZoomLevel);
+		// personWheel.setGenerations(newZoomLevel);
+	    } catch (Exception ex) {
+		throw new RuntimeException(ex);
+	    }
+	}
+
+    };
+
+    private final CustomAction personRelationsZoomOutAction = new CustomAction("Person.Relations.Zoom.Out") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+	    try {
+		personTree.setGenerations(personTree.getGenerations() + 1);
+		// personWheel.setGenerations(personWheel.getGenerations() +
+		// 1);
+		personRelationsZoomInAction.setEnabled(true);
+	    } catch (Exception ex) {
+		throw new RuntimeException(ex);
+	    }
+	}
+
+    };
+
+    private final PersonTableModel personsTableModel = new PersonTableModel(Person.persons);
+
+    private final JTable personTable;
+    private PersonTree personTree;
+    private JPanel personViewPanel;
     private final CustomAction quitAction = new CustomAction("Quit", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
 
 	/**
@@ -116,8 +298,60 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	    System.exit(0);
 	}
     };
+    private final CustomAction removePersonsAction = new CustomAction("Person.Remove", CustomAction.FLAG_CONFIRM) {
 
-    private final PersonTableModel personsTableModel = new PersonTableModel(Person.persons);
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    // TODO Auto-generated method stub
+
+	}
+
+    };
+    private final CustomAction saveAction = new CustomAction("Save", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    save();
+	}
+
+    };
+    private final CustomAction saveAsAction = new CustomAction("SaveAs", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    saveAs();
+	}
+
+    };
+    private final CustomAction searchPersonAction = new CustomAction("Person.Search") {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    // TODO Auto-generated method stub
+
+	}
+
+    };
 
     /**
      * @throws HeadlessException
@@ -125,14 +359,14 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
     public MainWindowSwing() throws HeadlessException {
 	super();
 
-        personTable = new JTable();
+	personTable = new JTable();
     }
 
     public void buildUI() {
-        JMenuBar menuBar = new JMenuBar();
+	JMenuBar menuBar = new JMenuBar();
 	setJMenuBar(menuBar);
 
-	JMenu fileMenu = new JMenu(Messages.getString("MainWindowSwing.FileMenu")); //$NON-NLS-1$
+	JMenu fileMenu = new JMenu(Messages.getString("MainWindow.FileMenu")); //$NON-NLS-1$
 	fileMenu.setMnemonic(KeyEvent.VK_F);
 	menuBar.add(fileMenu);
 
@@ -151,21 +385,20 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	Box personListCard = Box.createVerticalBox();
 	Box personListButtons = Box.createHorizontalBox();
 
-	JButton addPersonBtn = new JButton("+"); //$NON-NLS-1$
+	JButton addPersonBtn = new JButton(createPersonAction);
 	personListButtons.add(addPersonBtn);
 
-	final JButton remPersonBtn = new JButton("×"); //$NON-NLS-1$
-	remPersonBtn.setEnabled(false);
+	final JButton remPersonBtn = new JButton(removePersonsAction);
+	removePersonsAction.setEnabled(false);
 	personListButtons.add(remPersonBtn);
 
-	JButton searchPersonBtn = new JButton(Messages.getString("MainWindow.Search")); //$NON-NLS-1$
+	JButton searchPersonBtn = new JButton(searchPersonAction);
 	personListButtons.add(searchPersonBtn);
 
 	personListCard.add(personListButtons);
 
 	personTable.setModel(personsTableModel);
 	personTable.setAutoCreateRowSorter(true);
-	// personTable.setTableHeader(null);
 
 	personListCard.add(new JScrollPane(personTable));
 
@@ -185,136 +418,62 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	Box personRelationsButtons = Box.createHorizontalBox();
 	personRelationsCard.add(personRelationsButtons);
 
-	final JButton personRelationsTextButton = new JButton(Messages.getString("MainWindow.Text")); //$NON-NLS-1$
-	personRelationsTextButton.setEnabled(false);
+	ButtonGroup personRelationsType = new ButtonGroup();
+
+	final JToggleButton personRelationsTextButton = new JToggleButton(personRelationsShowTextAction);
 	personRelationsButtons.add(personRelationsTextButton, Component.LEFT_ALIGNMENT);
+	personRelationsType.add(personRelationsTextButton);
+	personRelationsTextButton.setSelected(true);
 
-	final JButton personRelationsTreeButton = new JButton(Messages.getString("MainWindow.Tree")); //$NON-NLS-1$
-	personRelationsTreeButton.setEnabled(true);
+	final JToggleButton personRelationsTreeButton = new JToggleButton(personRelationsShowTreeAction);
 	personRelationsButtons.add(personRelationsTreeButton, Component.LEFT_ALIGNMENT);
+	personRelationsType.add(personRelationsTreeButton);
 
-	final JButton personRelationsWheelButton = new JButton(Messages.getString("MainWindow.Wheel")); //$NON-NLS-1$
-	personRelationsWheelButton.setEnabled(true);
+	final JToggleButton personRelationsWheelButton = new JToggleButton(personRelationsShowWheelAction);
 	personRelationsButtons.add(personRelationsWheelButton, Component.LEFT_ALIGNMENT);
+	personRelationsType.add(personRelationsWheelButton);
 
 	personRelationsButtons.add(Box.createHorizontalGlue());
 
-	final JButton personRelationsZoomInButton = new JButton("+"); //$NON-NLS-1$
-	personRelationsZoomInButton.setEnabled(true);
+	final JButton personRelationsZoomInButton = new JButton(personRelationsZoomInAction);
+	personRelationsZoomInAction.setEnabled(true);
 	personRelationsButtons.add(personRelationsZoomInButton, Component.RIGHT_ALIGNMENT);
 
-	final JButton personRelationsZoomOutButton = new JButton("-"); //$NON-NLS-1$
-	personRelationsZoomOutButton.setEnabled(true);
+	final JButton personRelationsZoomOutButton = new JButton(personRelationsZoomOutAction);
+	personRelationsZoomOutAction.setEnabled(true);
 	personRelationsButtons.add(personRelationsZoomOutButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsRotateLeftButton = new JButton("<-\\"); //$NON-NLS-1$
-	personRelationsRotateLeftButton.setEnabled(true);
+	JButton personRelationsRotateLeftButton = new JButton(personRelationsRotateLeftAction);
+	personRelationsRotateLeftAction.setEnabled(true);
 	personRelationsButtons.add(personRelationsRotateLeftButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsRotateRightButton = new JButton("/->"); //$NON-NLS-1$
-	personRelationsRotateRightButton.setEnabled(true);
+	JButton personRelationsRotateRightButton = new JButton(personRelationsRotateRightAction);
+	personRelationsRotateRightAction.setEnabled(true);
 	personRelationsButtons.add(personRelationsRotateRightButton, Component.RIGHT_ALIGNMENT);
 
-	JButton personRelationsPrintButton = new JButton(Messages.getString("MainWindow.Print")); //$NON-NLS-1$
-	personRelationsPrintButton.setEnabled(true);
+	JButton personRelationsPrintButton = new JButton(personRelationsPrintAction);
+	personRelationsPrintAction.setEnabled(true);
 	personRelationsButtons.add(personRelationsPrintButton);
 
 	final PersonSummary personSummary = new PersonSummary();
 	JScrollPane personSummaryScrollPane = new JScrollPane(personSummary);
 
-        personSummary.addPersonClickListener(this);
-        
-	final PersonTree personTree = new PersonTree();
+	personSummary.addPersonClickListener(this);
+
+	personTree = new PersonTree();
 	JScrollPane personTreeScrollPane = new JScrollPane(personTree);
-        
+
 	final JComponent personWheel = new JPanel(); // TODO implement a custom
 	// component
 	JScrollPane personWheelScrollPane = new JScrollPane(personWheel);
 
-	final JPanel personRelationsPanel = new JPanel(new CardLayout());
+	personRelationsPanel = new JPanel(new CardLayout());
 
-	final String relationsCommandText = "TEXT"; //$NON-NLS-1$
-	final String relationsCommandTree = "TREE"; //$NON-NLS-1$
-	final String relationsCommandWheel = "WHEEL"; //$NON-NLS-1$
+	personRelationsPanel.add(personSummaryScrollPane, personRelationsShowTextAction.getActionCommand());
+	personRelationsPanel.add(personTreeScrollPane, personRelationsShowTreeAction.getActionCommand());
+	personRelationsPanel.add(personWheelScrollPane, personRelationsShowWheelAction.getActionCommand());
 
-	personRelationsPanel.add(personSummaryScrollPane, relationsCommandText);
-	personRelationsPanel.add(personTreeScrollPane, relationsCommandTree);
-	personRelationsPanel.add(personWheelScrollPane, relationsCommandWheel);
-
-	((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandText);
-
-	personRelationsTextButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		personRelationsTextButton.setEnabled(false);
-		personRelationsTreeButton.setEnabled(true);
-		personRelationsWheelButton.setEnabled(true);
-
-		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandText);
-
-	    }
-	});
-
-	personRelationsTreeButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		personRelationsTextButton.setEnabled(true);
-		personRelationsTreeButton.setEnabled(false);
-		personRelationsWheelButton.setEnabled(true);
-
-		CardLayout cl = (CardLayout) personRelationsPanel.getLayout();
-		cl.show(personRelationsPanel, relationsCommandTree);
-
-	    }
-	});
-
-	personRelationsWheelButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		personRelationsTextButton.setEnabled(true);
-		personRelationsTreeButton.setEnabled(true);
-		personRelationsWheelButton.setEnabled(false);
-
-		((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, relationsCommandWheel);
-
-	    }
-	});
-	personRelationsZoomInButton.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		try {
-		    personTree.setGenerations(personTree.getGenerations() + 1);
-		    // personWheel.setGenerations(personWheel.getGenerations() +
-		    // 1);
-		    personRelationsZoomOutButton.setEnabled(true);
-		} catch (Exception ex) {
-		    throw new RuntimeException(ex);
-		}
-	    }
-	});
-
-	personRelationsZoomOutButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		try {
-		    int newZoomLevel = personTree.getGenerations() - 1;
-
-		    if (newZoomLevel == 1) {
-			personRelationsZoomOutButton.setEnabled(false);
-		    }
-
-		    personTree.setGenerations(newZoomLevel);
-		    // personWheel.setGenerations(newZoomLevel);
-		} catch (Exception ex) {
-		    throw new RuntimeException(ex);
-		}
-
-	    }
-	});
+	personRelationsShowTextAction.setEnabled(true);
 
 	personRelationsCard.add(personRelationsPanel);
 	/**
@@ -334,14 +493,11 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	 * A button that switchs from person Details to person graph, or from
 	 * person graph to person list
 	 */
-	final JButton prevPersonViewBtn = new JButton("<"); //$NON-NLS-1$
-	prevPersonViewBtn.setEnabled(false);
+	final JButton prevPersonViewBtn = new JButton(personPrevViewAction);
+	personPrevViewAction.setEnabled(false);
 	personViewPane.add(prevPersonViewBtn);
 
-	/**
-	 * The container that displays list, graph or detail view
-	 */
-	final JPanel personViewPanel = new JPanel(new CardLayout());
+	personViewPanel = new JPanel(new CardLayout());
 
 	final String personCardCommandList = "LIST"; //$NON-NLS-1$
 	final String personCardCommandGraph = "GRAPH"; //$NON-NLS-1$
@@ -356,8 +512,8 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	 * A button than switches from person list to person graph or from
 	 * person graph to person details
 	 */
-	final JButton nextPersonViewBtn = new JButton(">"); //$NON-NLS-1$
-	nextPersonViewBtn.setEnabled(false);
+	final JButton nextPersonViewBtn = new JButton(personNextViewAction);
+	personNextViewAction.setEnabled(false);
 	personViewPane.add(nextPersonViewBtn);
 
 	/**
@@ -374,22 +530,6 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	// Various notifications and triggers
 	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-	// Connect the button to the Cards
-	prevPersonViewBtn.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		((CardLayout) personViewPanel.getLayout()).previous(personViewPanel);
-
-	    }
-	});
-
-	nextPersonViewBtn.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		((CardLayout) personViewPanel.getLayout()).next(personViewPanel);
-	    }
-	});
-
 	// Disable Remove and prev/next card when nothing is selected in list
 	personTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 	    @Override
@@ -404,24 +544,6 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 		personSummary.setCenter(currentPerson);
 		personTree.setCenter(currentPerson);
 		personEditorCard.setPerson(currentPerson);
-	    }
-	});
-
-	personRelationsPrintButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		PrinterJob pJob = PrinterJob.getPrinterJob();
-		pJob.setPrintable(personTree);
-		boolean doPrint = pJob.printDialog();
-
-		if (doPrint) {
-		    try {
-			pJob.print();
-		    } catch (PrinterException ex) {
-			System.err.println(ex);
-		    }
-		}
 	    }
 	});
 
@@ -447,20 +569,14 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	});
 
     }
-    
-    void dataChanged() {
-	isSavedToDisk = false;
 
-	quitAction.setRequest(true);
-	saveAction.setRequest(true);
+    public void jumpTo(Person person) {
+	for(int i = 0; i < personTable.getRowCount(); i++) {
+	    if(personsTableModel.getPersonAt(personTable.convertRowIndexToModel(i)) == person) {
+		personTable.changeSelection(i, 0, false, false);
+		break; // stop the loop
+	    }
 
-	if (Person.persons.isEmpty()) {
-	    newAction.setEnabled(false);
-            newAction.setRequest(false);
-            openAction.setRequest(false);
-	} else {
-	    newAction.setRequest(true);
-            openAction.setRequest(true);
 	}
     }
 
@@ -490,6 +606,11 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	case JFileChooser.ERROR_OPTION:
 	    return;
 	}
+    }
+
+    @Override
+    public void personClick(PersonSummary.PersonClickEvent pce) {
+	jumpTo(pce.getPerson());
     }
 
     public void save() {
@@ -523,6 +644,22 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	}
     }
 
+    void dataChanged() {
+	isSavedToDisk = false;
+
+	quitAction.setRequest(true);
+	saveAction.setRequest(true);
+
+	if (Person.persons.isEmpty()) {
+	    newAction.setEnabled(false);
+	    newAction.setRequest(false);
+	    openAction.setRequest(false);
+	} else {
+	    newAction.setRequest(true);
+	    openAction.setRequest(true);
+	}
+    }
+
     boolean saveRequest() {
 	String[] options = { Messages.getString("MainWindowSwing.DialogOption.Continue"), Messages.getString("MainWindowSwing.DialogOption.SaveFirst"), Messages.getString("MainWindowSwing.DialogOption.Cancel") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	int res = JOptionPane.showOptionDialog(MainWindowSwing.this,
@@ -549,20 +686,5 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	    // Shouldn't occur
 	    throw new RuntimeException();
 	}
-    }
-
-    public void jumpTo(Person person) { 
-        for(int i = 0; i < personTable.getRowCount(); i++) {
-            if(personsTableModel.getPersonAt(personTable.convertRowIndexToModel(i)) == person) {
-                personTable.changeSelection(i, 0, false, false);
-                break; // stop the loop
-            }
-                        
-        }
-    }
-
-    @Override
-    public void personClick(PersonSummary.PersonClickEvent pce) {
-        jumpTo(pce.getPerson());
     }
 }

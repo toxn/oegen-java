@@ -17,9 +17,9 @@ public final class Main
     public static void main(String[] args)
     {
 	MainWindowSwing mainWin = new MainWindowSwing();
-        mainWin.buildUI();
-        
-	mainWin.setTitle("Œgen"); //$NON-NLS-1$
+	mainWin.buildUI();
+
+	mainWin.setTitle("\u0152gen"); //$NON-NLS-1$
 	mainWin.setSize(800, 600);
 
 	mainWin.setVisible(true);

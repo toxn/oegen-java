@@ -21,7 +21,7 @@ public abstract class CustomAction extends AbstractAction {
     private static final String SUFFIX_LONGDESC = ".LongDescription"; //$NON-NLS-1$
     private static final String SUFFIX_MNEMONIC = ".Mnemonic"; //$NON-NLS-1$
     private static final String SUFFIX_NAME = ".Name"; //$NON-NLS-1$
-    private static final String PREFIX = "MainWindowSwing.Action."; //$NON-NLS-1$
+    private static final String PREFIX = "Action."; //$NON-NLS-1$
     private static final String SUFFIX_CONFIRMATION = ".Confirmation"; //$NON-NLS-1$
     public static final int FLAG_CONFIRM = 1 << 0;
     public static final int FLAG_REQUEST = 1 << 1;
@@ -56,7 +56,7 @@ public abstract class CustomAction extends AbstractAction {
     public Object getValue(String key) {
 	switch (key) {
 	case Action.NAME:
-	    return Messages.getString(PREFIX + m_ActionName + SUFFIX_NAME) + (m_Request ? "…" : ""); //$NON-NLS-1$ //$NON-NLS-2$
+	    return Messages.getString(PREFIX + m_ActionName + SUFFIX_NAME) + (m_Request ? "\u2026" : ""); //$NON-NLS-1$ //$NON-NLS-2$
 
 	case Action.MNEMONIC_KEY:
 	    try {
