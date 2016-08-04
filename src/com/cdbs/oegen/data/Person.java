@@ -18,12 +18,6 @@ import com.cdbs.oegen.ui.PersonListModel;
  */
 public class Person
 {
-    public PersonListModel getSiblings() {
-        if(siblings == null)
-            siblings = new SiblingList(this);
-        
-        return siblings;
-    }
     public enum Gender {
 	Unknown("?"), //$NON-NLS-1$
 	Male("\u2642"), //$NON-NLS-1$
@@ -40,16 +34,13 @@ public class Person
 	}
     }
     public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
-
-    private SiblingList siblings = null;
-    
     public static PersonListModel persons = new PersonListModel();
 
     public static HashMap<String, Person> indexId = new HashMap<>();
+
     public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
 
     public static final String PROPERTY_FIRSTNAME = "firstName"; //$NON-NLS-1$
-
     public static final String PROPERTY_GENDER = "gender"; //$NON-NLS-1$
 
     public static final String PROPERTY_LASTNAME = "lastName"; //$NON-NLS-1$
@@ -64,11 +55,13 @@ public class Person
 
     public static final String TAG_CHILD = "child"; //$NON-NLS-1$
 
+    private SiblingList siblings = null;
+
     public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public PersonListModel children = new PersonListModel();
-    private Gender gender = Gender.Unknown;
 
+    private Gender gender = Gender.Unknown;
     private String firstName = ""; //$NON-NLS-1$
 
     private String lastName = ""; //$NON-NLS-1$
@@ -136,15 +129,51 @@ public class Person
 	return mother;
     }
 
-    public void Remove()
+    public PersonListModel getSiblings() {
+	if(siblings == null) {
+	    siblings = new SiblingList(this);
+	}
+
+	return siblings;
+    }
+
+    /**
+     * Delete the person from the database
+     *
+     * This will cleanly erase the person and forward its deletion to each
+     * listener.
+     */
+    public void remove()
     {
+	// unlink from parents.
+	setFather(null);
+	setMother(null);
+
+	// unlink from children
+	for (Person child : children) {
+	    if (child.getFather() == this) {
+		child.setFather(null);
+	    }
+
+	    if (child.getMother() == this) {
+		child.setMother(null);
+	    }
+	}
+
+	// Clear the listeners
+	for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
+	    pcs.removePropertyChangeListener(pcl);
+	}
+
 	persons.removeElement(this);
 
 	// dereference without triggering stateChanged in persons
 	firstName = null;
 	lastName = null;
-	father = null;
-	mother = null;
+
+	indexId.remove(id);
+	id = null;
+
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
@@ -251,9 +280,11 @@ public class Person
 	mother = newValue;
 	pcs.firePropertyChange(PROPERTY_MOTHER, oldValue, newValue);
 
-	mother.children.addElement(this);
+	if (mother != null) {
+	    mother.children.addElement(this);
+	    mother.children.stateChanged(new ChangeEvent(this));
+	}
 
-	mother.children.stateChanged(new ChangeEvent(this));
 	persons.stateChanged(new ChangeEvent(this));
     }
 

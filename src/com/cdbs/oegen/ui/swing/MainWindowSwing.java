@@ -181,8 +181,20 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	    break;
 
 	case CMD_REMOVE_PERSON:
-	    Person currentPerson = Person.persons.elementAt(personTable.getSelectedRow());
-	    Person.persons.removeElement(currentPerson);
+	    int[] selectedRows = personTable.getSelectedRows();
+	    Person[] selectedPersons = new Person[selectedRows.length];
+
+	    int i = 0;
+	    for (int j : selectedRows) {
+		selectedPersons[i++] = personsTableModel
+			.getPersonAt(personTable.convertRowIndexToModel(j));
+	    }
+
+	    personTable.clearSelection();
+
+	    for (Person p : selectedPersons) {
+		p.remove();
+	    }
 	    break;
 
 	case CMD_PERSON_RELATIONS_TEXT:
@@ -473,22 +485,6 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     }
 
-    void dataChanged() {
-	isSavedToDisk = false;
-
-	quitAction.setRequest(true);
-	saveAction.setRequest(true);
-
-	if (Person.persons.isEmpty()) {
-	    newAction.setEnabled(false);
-	    newAction.setRequest(false);
-	    openAction.setRequest(false);
-	} else {
-	    newAction.setRequest(true);
-	    openAction.setRequest(true);
-	}
-    }
-
     public void jumpTo(Person person) {
 	for(int i = 0; i < personTable.getRowCount(); i++) {
 	    if(personsTableModel.getPersonAt(personTable.convertRowIndexToModel(i)) == person) {
@@ -560,6 +556,22 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	case JFileChooser.CANCEL_OPTION:
 	case JFileChooser.ERROR_OPTION:
 	    return;
+	}
+    }
+
+    void dataChanged() {
+	isSavedToDisk = false;
+
+	quitAction.setRequest(true);
+	saveAction.setRequest(true);
+
+	if (Person.persons.isEmpty()) {
+	    newAction.setEnabled(false);
+	    newAction.setRequest(false);
+	    openAction.setRequest(false);
+	} else {
+	    newAction.setRequest(true);
+	    openAction.setRequest(true);
 	}
     }
 
