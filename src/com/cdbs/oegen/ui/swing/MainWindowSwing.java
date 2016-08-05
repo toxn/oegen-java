@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -34,7 +36,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.cdbs.oegen.data.Person;
 import com.cdbs.oegen.data.io.xml.Exporter;
@@ -58,10 +59,16 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
      */
     static boolean isSavedToDisk = true;
 
+    private static final String CMD_ADD_PERSON = "ADD PERSON";
+    private static final String CMD_REMOVE_PERSON = "REMOVE PERSON";
+
     /**
      * The file where the data originate. receives normal save.
      */
     static File saveFile = null;
+
+    private final JTable personTable;
+
     private final CustomAction createPersonAction = new CustomAction("Person.Create") {
 
 	/**
@@ -71,10 +78,11 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    // TODO Auto-generated method stub
+	    Person newPerson=new Person();{try{personTable.requestFocusInWindow();personTable.editCellAt(personTable.convertRowIndexToView(personsTableModel.getRowOf(newPerson)),0);}catch(Exception ex){Logger.getLogger(MainWindowSwing.class.getName()).log(Level.SEVERE,null,ex);}}
 
 	}
     };
+
     private final CustomAction newAction = new CustomAction("New") { //$NON-NLS-1$
 	/**
 	 *
@@ -277,11 +285,9 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final PersonTableModel personsTableModel = new PersonTableModel(Person.persons);
-
-    private final JTable personTable;
     private PersonTree personTree;
     private JPanel personViewPanel;
+
     private final CustomAction quitAction = new CustomAction("Quit", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
 
 	/**
@@ -298,6 +304,9 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	    System.exit(0);
 	}
     };
+
+    private final PersonTableModel personsTableModel = new PersonTableModel(Person.persons);
+
     private final CustomAction removePersonsAction = new CustomAction("Person.Remove", CustomAction.FLAG_CONFIRM) {
 
 	/**
@@ -307,8 +316,13 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    // TODO Auto-generated method stub
+	    int[]selectedRows=personTable.getSelectedRows();Person[]selectedPersons=new Person[selectedRows.length];
 
+	    int i=0;for(int j:selectedRows){selectedPersons[i++]=personsTableModel.getPersonAt(personTable.convertRowIndexToModel(j));}
+
+	    personTable.clearSelection();
+
+	    for(Person p:selectedPersons){p.remove();}
 	}
 
     };
@@ -325,6 +339,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	}
 
     };
+
     private final CustomAction saveAsAction = new CustomAction("SaveAs", CustomAction.FLAG_REQUEST) { //$NON-NLS-1$
 
 	/**
@@ -338,6 +353,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	}
 
     };
+
     private final CustomAction searchPersonAction = new CustomAction("Person.Search") {
 
 	/**
@@ -362,6 +378,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	personTable = new JTable();
     }
 
+
     public void buildUI() {
 	JMenuBar menuBar = new JMenuBar();
 	setJMenuBar(menuBar);
@@ -384,6 +401,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	 */
 	Box personListCard = Box.createVerticalBox();
 	Box personListButtons = Box.createHorizontalBox();
+
 
 	JButton addPersonBtn = new JButton(createPersonAction);
 	personListButtons.add(addPersonBtn);
@@ -531,20 +549,17 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 	// Disable Remove and prev/next card when nothing is selected in list
-	personTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-	    @Override
-	    public void valueChanged(ListSelectionEvent e) {
-		ListSelectionModel lsm = personTable.getSelectionModel();
-		boolean bSelectionExists = !lsm.isSelectionEmpty();
-		prevPersonViewBtn.setEnabled(bSelectionExists);
-		nextPersonViewBtn.setEnabled(bSelectionExists);
-		remPersonBtn.setEnabled(bSelectionExists);
+	personTable.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+	    ListSelectionModel lsm = personTable.getSelectionModel();
+	    boolean bSelectionExists = !lsm.isSelectionEmpty();
+	    prevPersonViewBtn.setEnabled(bSelectionExists);
+	    nextPersonViewBtn.setEnabled(bSelectionExists);
+	    remPersonBtn.setEnabled(bSelectionExists);
 
-		Person currentPerson = Person.persons.elementAt(lsm.getLeadSelectionIndex());
-		personSummary.setCenter(currentPerson);
-		personTree.setCenter(currentPerson);
-		personEditorCard.setPerson(currentPerson);
-	    }
+	    Person currentPerson = Person.persons.elementAt(lsm.getLeadSelectionIndex());
+	    personSummary.setCenter(currentPerson);
+	    personTree.setCenter(currentPerson);
+	    personEditorCard.setPerson(currentPerson);
 	});
 
 	Person.persons.addListDataListener(new ListDataListener() {

@@ -3,13 +3,15 @@
  */
 package com.cdbs.oegen.data;
 
-import com.cdbs.oegen.ui.Messages;
-import com.cdbs.oegen.ui.PersonList;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.UUID;
+
 import javax.swing.event.ChangeEvent;
+
+import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonList;
 
 /**
  * @author toxn
@@ -17,54 +19,45 @@ import javax.swing.event.ChangeEvent;
  */
 public class Person
 {
-    public PersonList getSiblings() {
-        if(siblings == null)
-            siblings = new SiblingList(this);
-        
-        return siblings;
-    }
     public enum Gender {
-        Unknown(Messages.getString("Person.Gender.Unknown"), "?"), //$NON-NLS-2$
-        Male(Messages.getString("Person.Gender.Male"), "\u2642"), //$NON-NLS-2$
-        Female(Messages.getString("Person.Gender.Female"), "\u2640"), //$NON-NLS-2$
-        Other(Messages.getString("Person.Gender.Other"), "\u26A7"); //$NON-NLS-2$
+	Unknown(Messages.getString("Person.Gender.Unknown"), "?"), //$NON-NLS-2$
+	Male(Messages.getString("Person.Gender.Male"), "\u2642"), //$NON-NLS-2$
+	Female(Messages.getString("Person.Gender.Female"), "\u2640"), //$NON-NLS-2$
+	Other(Messages.getString("Person.Gender.Other"), "\u26A7"); //$NON-NLS-2$
 
-        private final String symbol;
-        private final String nlsName;
+	private final String symbol;
+	private final String nlsName;
 
-        Gender(String nlsName, String symbol) {
-            this.nlsName = nlsName;
-            this.symbol = symbol;
-        }
+	Gender(String nlsName, String symbol) {
+	    this.nlsName = nlsName;
+	    this.symbol = symbol;
+	}
 
-        public final String getSymbol() {
-            return symbol;
-        }
+	public final String getNlsName() {
+	    return nlsName;
+	}
 
-        public final String getNlsName() {
-            return nlsName;
-        }
+	public final String getSymbol() {
+	    return symbol;
+	}
 
-        @Override
-        public String toString() {
-            return nlsName;
-        }
+	@Override
+	public String toString() {
+	    return nlsName;
+	}
     }
-    public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
-
-    private SiblingList siblings = null;
-    
+    public static final String GENERATED_ID_PREFIX = "$";
     public static PersonList persons = new PersonList();
 
-    public static HashMap<String, Person> indexId = new HashMap<>();
-    public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
 
-    public static final String PROPERTY_FIRSTNAME = "firstName"; //$NON-NLS-1$
+    public static HashMap<String, Person> indexId = new HashMap<>();
+
+    public static final String PROPERTY_FATHER = "father";
+    public static final String PROPERTY_FIRSTNAME = "firstName";
 
     public static final String PROPERTY_GENDER = "gender"; //$NON-NLS-1$
 
     public static final String PROPERTY_LASTNAME = "lastName"; //$NON-NLS-1$
-
     public static final String PROPERTY_MOTHER = "mother"; //$NON-NLS-1$
 
     public static final String PROPERTY_ID = "id"; //$NON-NLS-1$
@@ -75,13 +68,15 @@ public class Person
 
     public static final String TAG_CHILD = "child"; //$NON-NLS-1$
 
+    private SiblingList siblings = null;
+
     public final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public PersonList children = new PersonList();
+
     private Gender gender = Gender.Unknown;
 
-    private String firstName = ""; //$NON-NLS-1$
-
+    private String firstName = "";
     private String lastName = ""; //$NON-NLS-1$
 
     private Person father;
@@ -147,15 +142,51 @@ public class Person
 	return mother;
     }
 
-    public void Remove()
+    public PersonList getSiblings() {
+	if(siblings == null) {
+	    siblings = new SiblingList(this);
+	}
+
+	return siblings;
+    }
+
+    /**
+     * Delete the person from the database
+     *
+     * This will cleanly erase the person and forward its deletion to each
+     * listener.
+     */
+    public void remove()
     {
+	// unlink from parents.
+	setFather(null);
+	setMother(null);
+
+	// unlink from children
+	for (Person child : children) {
+	    if (child.getFather() == this) {
+		child.setFather(null);
+	    }
+
+	    if (child.getMother() == this) {
+		child.setMother(null);
+	    }
+	}
+
+	// Clear the listeners
+	for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
+	    pcs.removePropertyChangeListener(pcl);
+	}
+
 	persons.removeElement(this);
 
 	// dereference without triggering stateChanged in persons
 	firstName = null;
 	lastName = null;
-	father = null;
-	mother = null;
+
+	indexId.remove(id);
+	id = null;
+
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
@@ -181,9 +212,10 @@ public class Person
 
 	pcs.firePropertyChange(PROPERTY_FATHER, oldValue, newValue);
 
-	father.children.addElement(this);
-
-	father.children.stateChanged(new ChangeEvent(this));
+	if (father != null) {
+	    father.children.addElement(this);
+	    father.children.stateChanged(new ChangeEvent(this));
+	}
 	persons.stateChanged(new ChangeEvent(this));
     }
 
@@ -213,7 +245,8 @@ public class Person
     }
 
     /**
-     * @param newValue le id Ã  dÃ©finir
+     * @param newValue
+     *            le id à définir
      */
     public void setId(String newValue) {
 	String newId = newValue;
@@ -262,9 +295,11 @@ public class Person
 	mother = newValue;
 	pcs.firePropertyChange(PROPERTY_MOTHER, oldValue, newValue);
 
-	mother.children.addElement(this);
+	if (mother != null) {
+	    mother.children.addElement(this);
+	    mother.children.stateChanged(new ChangeEvent(this));
+	}
 
-	mother.children.stateChanged(new ChangeEvent(this));
 	persons.stateChanged(new ChangeEvent(this));
     }
 
