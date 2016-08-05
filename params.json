@@ -1,0 +1,6 @@
+{
+  "name": "Oegen-java",
+  "tagline": "Java prototype for oegen project",
+  "body": "# oegen-java\r\nJava prototype for oegen project\r\n\r\nA very simple and straight forward working genealogy assistant:\r\n- Persons with only one firstname/lastname, one parent of each gender. \r\n- Exact gregorian dates of birth, baptism, marriage, death and funeral. \r\n- Simple places (no hierarchy) for each of these events. \r\n- Loading and saving to a custom xml format. \r\n- Swing interface with tree and detail view. \r\n- Basic reports printing (tree, detail...)\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
