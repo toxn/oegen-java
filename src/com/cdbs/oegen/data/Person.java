@@ -199,9 +199,10 @@ public class Person
 
 	pcs.firePropertyChange(PROPERTY_FATHER, oldValue, newValue);
 
-	father.children.addElement(this);
-
-	father.children.stateChanged(new ChangeEvent(this));
+	if (father != null) {
+	    father.children.addElement(this);
+	    father.children.stateChanged(new ChangeEvent(this));
+	}
 	persons.stateChanged(new ChangeEvent(this));
     }
 

@@ -106,7 +106,7 @@ public class SiblingList extends PersonListModel implements ListDataListener {
 	    try {
 		super.finalize();
 	    } catch (Throwable e) {
-		// TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
+		// TODO Bloc catch généré automatiquement
 		e.printStackTrace();
 	    }
 	}
