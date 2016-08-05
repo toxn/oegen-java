@@ -6,13 +6,13 @@ package com.cdbs.oegen.data;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import com.cdbs.oegen.ui.PersonListModel;
+import com.cdbs.oegen.ui.PersonList;
 
 /**
  * @author toxn
  *
  */
-public class SiblingList extends PersonListModel implements ListDataListener {
+public class SiblingList extends PersonList implements ListDataListener {
     /**
      *
      */
@@ -34,7 +34,7 @@ public class SiblingList extends PersonListModel implements ListDataListener {
 
     @Override
     public void intervalAdded(ListDataEvent e) {
-	PersonListModel source = (PersonListModel) e.getSource();
+	PersonList source = (PersonList) e.getSource();
 
 	for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
 	    Person p = source.elementAt(i);
@@ -111,4 +111,5 @@ public class SiblingList extends PersonListModel implements ListDataListener {
 	    }
 	}
     }
+
 }

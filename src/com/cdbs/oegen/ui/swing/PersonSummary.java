@@ -16,7 +16,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 
 import com.cdbs.oegen.data.Person;
-import com.cdbs.oegen.ui.PersonListModel;
+import com.cdbs.oegen.ui.PersonList;
 
 /**
  * @author toxn
@@ -52,7 +52,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
      *
      */
     private static final long serialVersionUID = 1L;
-
+    
     @SuppressWarnings("unused")
     private static void changeField(HTMLDocument doc, String id, String newValue) {
 	try {
@@ -69,8 +69,8 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	System.out.println(doc);
     }
-
-    private static String personListToHtmlList(PersonListModel children) {
+    
+    private static String personListToHtmlList(PersonList children) {
 	String result = ""; //$NON-NLS-1$
 
 	if (children == null)
@@ -82,7 +82,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	return result;
     }
-
+    
     private static String personToHtml(Person person, boolean link) {
 	String result = "";
 
@@ -105,7 +105,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	return result;
     }
-
+    
     private static String personToHtmlList(Person person) {
 	if (person == null)
 	    return ""; //$NON-NLS-1$
@@ -161,21 +161,25 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 	listeners.add(pcl);
     }
 
-    private void firePersonClick(Person person) {
-	PersonClickEvent evt = new PersonClickEvent(this, person);
-
-	// Process the listeners last to first, notifying
-	// those that are interested in this event
-	for(PersonClickListener pcl : listeners) {
-	    pcl.personClick(evt);
-	}
-    }
-
     @Override
     public void hyperlinkUpdate(HyperlinkEvent e) {
 	if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 	    firePersonClick(Person.persons.search(e.getDescription()));
 	}
+    }
+
+    public void removePersonClickListener(PersonClickListener pcl) {
+	listeners.remove(pcl);
+    }
+
+    private void firePersonClick(Person person) {
+        PersonClickEvent evt = new PersonClickEvent(this, person);
+        
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        for(PersonClickListener pcl : listeners) {
+            pcl.personClick(evt);
+        }
     }
 
     @Override
@@ -220,10 +224,6 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 	 * Person.PROPERTY_FIRSTNAME, center.getFirstName()); changeField(doc,
 	 * Person.PROPERTY_LASTNAME, center.getLastName());
 	 */
-    }
-
-    public void removePersonClickListener(PersonClickListener pcl) {
-	listeners.remove(pcl);
     }
 
 }

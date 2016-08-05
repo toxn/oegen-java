@@ -3,6 +3,11 @@
  */
 package com.cdbs.oegen.ui.swing;
 
+import com.cdbs.oegen.data.Person;
+import com.cdbs.oegen.data.Person.Gender;
+import com.cdbs.oegen.ui.Messages;
+import com.cdbs.oegen.ui.PersonList;
+import com.cdbs.oegen.ui.PersonTableModel;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -11,21 +16,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import javax.swing.Box;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-
-import com.cdbs.oegen.data.Person;
-import com.cdbs.oegen.data.Person.Gender;
-import com.cdbs.oegen.ui.Messages;
-import com.cdbs.oegen.ui.PersonListModel;
-import com.cdbs.oegen.ui.PersonTableModel;
+import javax.swing.*;
 
 /**
  * @author toxn
@@ -48,7 +39,7 @@ implements com.cdbs.oegen.ui.PersonEditor, PropertyChangeListener, ActionListene
 
     private final JTextField firstNameTextField = new JTextField(20);
     private final JTextField lastNameTextField = new JTextField(20);
-    private final JComboBox<Gender> genderComboBox = new JComboBox<Person.Gender>(Person.Gender.values());
+    private final JComboBox<Gender> genderComboBox = new JComboBox<>(Gender.values());
 
     private final JTable childrenTable;
 
@@ -241,7 +232,7 @@ implements com.cdbs.oegen.ui.PersonEditor, PropertyChangeListener, ActionListene
 	    genderComboBox.setSelectedItem(Gender.Unknown);
 
 	    childrenTable.clearSelection();
-	    childrenTable.setModel(new PersonTableModel(new PersonListModel()));
+        childrenTable.setModel(new PersonTableModel(new PersonList()));
 
 	} else {
 	    setEnabled(true);

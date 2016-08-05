@@ -21,7 +21,7 @@ public abstract class CustomAction extends AbstractAction {
     private static final String SUFFIX_LONGDESC = ".LongDescription"; //$NON-NLS-1$
     private static final String SUFFIX_MNEMONIC = ".Mnemonic"; //$NON-NLS-1$
     private static final String SUFFIX_NAME = ".Name"; //$NON-NLS-1$
-    private static final String PREFIX = "MainWindowSwing.Action."; //$NON-NLS-1$
+    private static final String PREFIX = "Action."; //$NON-NLS-1$
     private static final String SUFFIX_CONFIRMATION = ".Confirmation"; //$NON-NLS-1$
     public static final int FLAG_CONFIRM = 1 << 0;
     public static final int FLAG_REQUEST = 1 << 1;
