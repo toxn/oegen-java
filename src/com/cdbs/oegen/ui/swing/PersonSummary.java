@@ -4,21 +4,19 @@
 package com.cdbs.oegen.ui.swing;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.EventObject;
 
 import javax.swing.BoxLayout;
 import javax.swing.JTextPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 
 import com.cdbs.oegen.data.Person;
-import com.cdbs.oegen.ui.PersonListModel;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.List;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
+import com.cdbs.oegen.ui.PersonList;
 
 /**
  * @author toxn
@@ -28,50 +26,51 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
     /**
      *
      */
-    private static final long serialVersionUID = 1L;
+    public class PersonClickEvent extends EventObject {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final Person person;
 
-    public void addPersonClickListener(PersonClickListener pcl) {
-        listeners.add(pcl);
+	public PersonClickEvent(Object source, Person person) {
+	    super(source);
+
+	    this.person = person;
+	}
+
+	public Person getPerson() {
+	    return person;
+	}
     }
-    
-    public void removePersonClickListener(PersonClickListener pcl) {
-        listeners.remove(pcl);
+
+    public interface PersonClickListener extends EventListener {
+	void personClick(PersonClickEvent pce);
     }
 
     /**
      *
      */
-    public class PersonClickEvent extends EventObject {
-        private final Person person;
-        
-        public PersonClickEvent(Object source, Person person) {
-            super(source);
-            
-            this.person = person;
-        }
-        
-        public Person getPerson() {
-            return person;
-        }
+    private static final long serialVersionUID = 1L;
+    
+    @SuppressWarnings("unused")
+    private static void changeField(HTMLDocument doc, String id, String newValue) {
+	try {
+	    // doc.setInnerHTML(doc.getElement(id), newValue);
+	    doc.setOuterHTML(doc.getElement(id),
+		    "<span class=\"" + id + "\" id=\"" + id + "\">" + newValue + "</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	} catch (BadLocationException e) {
+	    // TODO Bloc catch généré automatiquement
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    // TODO Bloc catch généré automatiquement
+	    e.printStackTrace();
+	}
+
+	System.out.println(doc);
     }
     
-    public interface PersonClickListener extends EventListener {
-        void personClick(PersonClickEvent pce);
-    }
-    
-    private final ArrayList<PersonClickListener> listeners = new ArrayList<>();
-    
-    private void firePersonClick(Person person) {
-        PersonClickEvent evt = new PersonClickEvent(this, person);
-        
-        // Process the listeners last to first, notifying
-        // those that are interested in this event
-        for(PersonClickListener pcl : listeners) {
-            pcl.personClick(evt);
-        }
-    }
-    
-    private static String personListToHtmlList(PersonListModel children) {
+    private static String personListToHtmlList(PersonList children) {
 	String result = ""; //$NON-NLS-1$
 
 	if (children == null)
@@ -83,7 +82,30 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	return result;
     }
+    
+    private static String personToHtml(Person person, boolean link) {
+	String result = "";
 
+	if (person == null)
+	    return result;
+
+	result += "<span class=\"" + Person.PROPERTY_GENDER + "\">" + person.getGender().getSymbol() //$NON-NLS-1$ //$NON-NLS-2$
+		+ "</span> " //$NON-NLS-1$
+		+ "<span class=\"" + Person.PROPERTY_LASTNAME + "\" id=\"" + Person.PROPERTY_LASTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$
+		+ person.getLastName() + "</span> " //$NON-NLS-1$
+		+ "<span class=\"" + Person.PROPERTY_FIRSTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$
+		+ person.getFirstName() + "</span>"; //$NON-NLS-1$
+
+	if(link)
+	{
+	    result = "<a href=\"" + person.getId() + "\">" //$NON-NLS-1$
+		    + result
+		    + "</a"; //$NON-NLS-1$
+	}
+
+	return result;
+    }
+    
     private static String personToHtmlList(Person person) {
 	if (person == null)
 	    return ""; //$NON-NLS-1$
@@ -94,21 +116,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
     }
 
-    private static void changeField(HTMLDocument doc, String id, String newValue) {
-	try {
-	    // doc.setInnerHTML(doc.getElement(id), newValue);
-	    doc.setOuterHTML(doc.getElement(id),
-		    "<span class=\"" + id + "\" id=\"" + id + "\">" + newValue + "</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	} catch (BadLocationException e) {
-	    // TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
-	    e.printStackTrace();
-	}
-
-	System.out.println(doc);
-    }
+    private final ArrayList<PersonClickListener> listeners = new ArrayList<>();
 
     private final JTextPane textPane = new JTextPane();
 
@@ -135,18 +143,43 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	// Create style sheet
 	((HTMLDocument) textPane.getDocument()).getStyleSheet()
-                .addRule("." + Person.PROPERTY_LASTNAME + " { font-variant: small-caps; }");
+	.addRule("." + Person.PROPERTY_LASTNAME + " { font-variant: small-caps; }");
 
 	// Insert default text
 	textPane.setText(defaultText);
-        
-        textPane.addHyperlinkListener(this);
+
+	textPane.addHyperlinkListener(this);
 
 
 	this.add(textPane);
 
 	// Change text to actual person
 	rebuild();
+    }
+
+    public void addPersonClickListener(PersonClickListener pcl) {
+	listeners.add(pcl);
+    }
+
+    @Override
+    public void hyperlinkUpdate(HyperlinkEvent e) {
+	if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+	    firePersonClick(Person.persons.search(e.getDescription()));
+	}
+    }
+
+    public void removePersonClickListener(PersonClickListener pcl) {
+	listeners.remove(pcl);
+    }
+
+    private void firePersonClick(Person person) {
+        PersonClickEvent evt = new PersonClickEvent(this, person);
+        
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        for(PersonClickListener pcl : listeners) {
+            pcl.personClick(evt);
+        }
     }
 
     @Override
@@ -163,13 +196,13 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 		+ "   <body>" //$NON-NLS-1$
 		+ "       <h1>" //$NON-NLS-1$
 		+ personToHtml(center, false)
-                + "       </h1>" //$NON-NLS-2$
+		+ "       </h1>"
 		+ "     <ul>" //$NON-NLS-1$
 		+ "       <li>Parents" //$NON-NLS-1$
 		+ "         <ul>" //$NON-NLS-1$
-		+ personToHtmlList(center.getFather()) 
-                + personToHtmlList(center.getMother()) 
-                + "         </ul" //$NON-NLS-1$
+		+ personToHtmlList(center.getFather())
+		+ personToHtmlList(center.getMother())
+		+ "         </ul" //$NON-NLS-1$
 		+ "       </li>" //$NON-NLS-1$
 		+ "       <li>Siblings" //$NON-NLS-1$
 		+ "         <ul>" //$NON-NLS-1$
@@ -191,33 +224,6 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 	 * Person.PROPERTY_FIRSTNAME, center.getFirstName()); changeField(doc,
 	 * Person.PROPERTY_LASTNAME, center.getLastName());
 	 */
-    }
-
-    private static String personToHtml(Person person, boolean link) {
-        String result = "";
-        
-        if (person == null)
-            return result;
-        
-        result += "<span class=\"" + Person.PROPERTY_GENDER + "\">" + person.getGender().getSymbol() //$NON-NLS-1$ //$NON-NLS-2$
-		+ "</span> " //$NON-NLS-1$
-		+ "<span class=\"" + Person.PROPERTY_LASTNAME + "\" id=\"" + Person.PROPERTY_LASTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$
-		+ person.getLastName() + "</span> " //$NON-NLS-1$
-		+ "<span class=\"" + Person.PROPERTY_FIRSTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$
-		+ person.getFirstName() + "</span>"; //$NON-NLS-1$
-
-        if(link)
-            result = "<a href=\"" + person.getId() + "\">" //$NON-NLS-1$
-		+ result
-		+ "</a"; //$NON-NLS-1$
-        
-        return result;
-    }
-
-    @Override
-    public void hyperlinkUpdate(HyperlinkEvent e) {
-        if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-            firePersonClick(Person.persons.search(e.getDescription()));
     }
 
 }

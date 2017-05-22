@@ -22,13 +22,13 @@ public class PersonTableModel implements TableModel, ListDataListener {
     /**
      * The list containing the persons to handle
      */
-    private final PersonListModel persons;
+    private final PersonList persons;
     private final Set<TableModelListener> tableModelListeners = new HashSet<TableModelListener>();
 
     /**
      *
      */
-    public PersonTableModel(PersonListModel personList) {
+    public PersonTableModel(PersonList personList) {
 	persons = personList;
 	persons.addListDataListener(this);
     }
