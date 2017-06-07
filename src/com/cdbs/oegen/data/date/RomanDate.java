@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cdbs.oegen.data;
+package com.cdbs.oegen.data.date;
 
 import java.beans.PropertyChangeSupport;
 
@@ -11,7 +11,7 @@ import java.beans.PropertyChangeSupport;
  *
  * @author toxn
  */
-public class RomanDate {
+public class RomanDate extends SimpleDate {
     public static final String PROP_DAY = "DAY";
     public static final String PROP_MONTH = "MONTH";
     public static final String PROP_YEAR = "YEAR";
@@ -129,5 +129,68 @@ public class RomanDate {
             this.m_Year = year;
             propertyChangeSupport.firePropertyChange(PROP_YEAR, oldYear, m_Year);
         }
+    }
+
+    @Override
+    @SuppressWarnings("fallthrough")
+    int toDaysFromZero() throws Exception {
+        if (m_Day == DAY_UNKNOWN
+                || m_Month == MONTH_UNKNOWN
+                || m_Year == YEAR_UNKNOWN) {
+            throw new Exception();
+        }
+
+        int result = (int) (365.25 * m_Year); //FIXME: use the actual number of bisextile years.
+
+        switch (m_Month) {
+            case 12:
+                result += 30;
+            // Fallthrough
+
+            case 11:
+                result += 31;
+            // Fallthrough
+
+            case 10:
+                result += 30;
+            // Fallthrough
+
+            case 9:
+                result += 31;
+            // Fallthrough
+
+            case 8:
+                result += 30;
+            // Fallthrough
+
+            case 7:
+                result += 31;
+            // Fallthrough
+
+            case 6:
+                result += 31;
+            // Fallthrough
+
+            case 5:
+                result += 30;
+            // Fallthrough
+
+            case 4:
+                result += 31;
+            // Fallthrough
+
+            case 3:
+                result += 30;
+            // Fallthrough
+
+            case 2:
+                result += 31;
+            // Fallthrough
+
+            case 1:
+                result += m_Day;
+        }
+
+        return result;
     }
 }

@@ -3,12 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cdbs.oegen.data;
+package com.cdbs.oegen.data.date;
 
 /**
  *
  * @author toxn
  */
-public class SimpleDate extends Date {
+public class UnaryOperator extends ComplexDate {
+    public enum Operator {
+        Before,
+        After,
+        Circa;
+    }
 
+    public Operator operator;
+    public Date date;
 }

@@ -3,12 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cdbs.oegen.data;
+package com.cdbs.oegen.data.date;
 
 /**
  *
  * @author toxn
  */
-public abstract class Date {
+public class BinaryOperator {
+    public enum Operator {
+        And,
+        Or,
+        Xor;
+    }
 
+    public Date date1;
+    public Operator operator;
+    public Date date2;
 }

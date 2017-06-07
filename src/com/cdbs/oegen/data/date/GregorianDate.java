@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cdbs.oegen.data;
+package com.cdbs.oegen.data.date;
 
 /**
  *
  * @author toxn
  */
-public class ComplexDate extends Date {
+public class GregorianDate extends RomanDate {
+
+    public GregorianDate(int day, int month, int year) throws Exception {
+        super(day, month, year);
+    }
 
 }
