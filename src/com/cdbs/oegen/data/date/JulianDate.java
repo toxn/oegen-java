@@ -9,19 +9,18 @@ package com.cdbs.oegen.data.date;
  *
  * @author toxn
  */
-public class GregorianDate extends RomanDate {
+public class JulianDate extends RomanDate {
 
-    public GregorianDate(int day, int month, int year) throws Exception {
+    public JulianDate(int day, int month, int year) throws Exception {
         super(day, month, year);
     }
 
     @Override
     protected boolean isLeapYear(int year) {
-        return (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+        return year % 4 == 0;
     }
 
     @Override
-    @SuppressWarnings("fallthrough")
     int toDaysFromZero() throws Exception {
         //FIXME: fonctionne uniquement à partir de l'an 1
 
@@ -31,7 +30,7 @@ public class GregorianDate extends RomanDate {
             throw new Exception();
         }
 
-        int result = 0;
+        int result = (int) (-445 - 44 * 365.25); // First julian year is 445 days long.
 
         for (int i = 1; i < getYear(); i++) {
             result += isLeapYear(i) ? 366 : 365;
@@ -88,4 +87,5 @@ public class GregorianDate extends RomanDate {
 
         return result;
     }
+
 }

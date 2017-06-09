@@ -11,22 +11,24 @@ import java.beans.PropertyChangeSupport;
  *
  * @author toxn
  */
-public class RomanDate extends SimpleDate {
+public abstract class RomanDate extends SimpleDate {
     public static final String PROP_DAY = "DAY";
     public static final String PROP_MONTH = "MONTH";
     public static final String PROP_YEAR = "YEAR";
 
     private int m_Day;
 
-    private static final int DAY_UNKNOWN = 0;
+    public static final int DAY_UNKNOWN = 0;
 
     private int m_Month;
 
-    private static final int MONTH_UNKNOWN = 0;
+    public static final int MONTH_UNKNOWN = 0;
 
     private int m_Year;
 
-    private static final int YEAR_UNKNOWN = Integer.MIN_VALUE;
+    public static final int YEAR_UNKNOWN = Integer.MIN_VALUE;
+
+    protected abstract boolean isLeapYear(int year);
 
     private final transient PropertyChangeSupport propertyChangeSupport = new java.beans.PropertyChangeSupport(this);
 
@@ -57,7 +59,7 @@ public class RomanDate extends SimpleDate {
     }
 
     /**
-     * @param m_Month the m_Month to set
+     * @param month the month to set
      */
     public void setMonth(int month) {
         int oldMonth = this.m_Month;
@@ -93,7 +95,7 @@ public class RomanDate extends SimpleDate {
                 break;
 
             case 2:
-                if ((year == YEAR_UNKNOWN) || ((year % 4 == 0) && (year % 100 != 0)) && (day > 29)) {
+                if (isLeapYear(year) && (day > 29)) {
                     throw new Exception();
                 } else if (day > 28) {
                     throw new Exception();
@@ -131,66 +133,4 @@ public class RomanDate extends SimpleDate {
         }
     }
 
-    @Override
-    @SuppressWarnings("fallthrough")
-    int toDaysFromZero() throws Exception {
-        if (m_Day == DAY_UNKNOWN
-                || m_Month == MONTH_UNKNOWN
-                || m_Year == YEAR_UNKNOWN) {
-            throw new Exception();
-        }
-
-        int result = (int) (365.25 * m_Year); //FIXME: use the actual number of bisextile years.
-
-        switch (m_Month) {
-            case 12:
-                result += 30;
-            // Fallthrough
-
-            case 11:
-                result += 31;
-            // Fallthrough
-
-            case 10:
-                result += 30;
-            // Fallthrough
-
-            case 9:
-                result += 31;
-            // Fallthrough
-
-            case 8:
-                result += 30;
-            // Fallthrough
-
-            case 7:
-                result += 31;
-            // Fallthrough
-
-            case 6:
-                result += 31;
-            // Fallthrough
-
-            case 5:
-                result += 30;
-            // Fallthrough
-
-            case 4:
-                result += 31;
-            // Fallthrough
-
-            case 3:
-                result += 30;
-            // Fallthrough
-
-            case 2:
-                result += 31;
-            // Fallthrough
-
-            case 1:
-                result += m_Day;
-        }
-
-        return result;
-    }
 }
