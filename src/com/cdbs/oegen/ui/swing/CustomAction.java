@@ -62,7 +62,7 @@ public abstract class CustomAction extends AbstractAction {
 	    try {
 		return KeyStroke.getKeyStroke(Messages.getString(PREFIX + m_ActionName + SUFFIX_MNEMONIC))
 			.getKeyCode();
-	    } catch (@SuppressWarnings("unused") Exception e) {
+	    } catch (Exception e) {
 		return null;
 	    }
 
