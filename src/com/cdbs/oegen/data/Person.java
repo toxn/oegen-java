@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.swing.event.ChangeEvent;
 
+import com.cdbs.oegen.data.date.Date;
 import com.cdbs.oegen.ui.Messages;
 import com.cdbs.oegen.ui.PersonList;
 
@@ -66,6 +67,9 @@ public class Person
 
     public static final String PROPERTY_CHILDREN = "children"; //$NON-NLS-1$
 
+    public static final String PROPERTY_DATEOFBIRTH = "dateOfBirth"; //$NON-NLS-1$
+    public static final String PROPERTY_DATEOFDEATH = "dateOfDeath"; //$NON-NLS-1$
+
     public static final String TAG_CHILD = "child"; //$NON-NLS-1$
 
     private SiblingList siblings = null;
@@ -85,6 +89,9 @@ public class Person
 
     private String id;
 
+    private Date dateOfBirth;
+    private Date dateOfDeath;
+
     public Person() {
 	super();
 	persons.addElement(this);
@@ -93,6 +100,20 @@ public class Person
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
 	pcs.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * @return the dateOfBirth
+     */
+    public Date getDateOfBirth() {
+	return dateOfBirth;
+    }
+
+    /**
+     * @return the dateOfDeath
+     */
+    public Date getDateOfDeath() {
+	return dateOfDeath;
     }
 
     /**
@@ -191,6 +212,36 @@ public class Person
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
 	pcs.removePropertyChangeListener(listener);
+    }
+
+    /**
+     * @param dateOfBirth the dateOfBirth to set
+     */
+    public void setDateOfBirth(Date dateOfBirth) {
+	if (this.dateOfBirth.equals(dateOfBirth))
+	    return;
+
+	Date oldValue = this.dateOfBirth;
+
+	this.dateOfBirth = dateOfBirth;
+
+	pcs.firePropertyChange(PROPERTY_DATEOFBIRTH, oldValue, dateOfBirth);
+	persons.stateChanged(new ChangeEvent(this));
+    }
+
+    /**
+     * @param dateOfDeath the dateOfDeath to set
+     */
+    public void setDateOfDeath(Date dateOfDeath) {
+	if (this.dateOfDeath.equals(dateOfDeath))
+	    return;
+
+	Date oldValue = this.dateOfDeath;
+
+	this.dateOfDeath = dateOfDeath;
+
+	pcs.firePropertyChange(PROPERTY_DATEOFDEATH, oldValue, dateOfDeath);
+	persons.stateChanged(new ChangeEvent(this));
     }
 
     /**
