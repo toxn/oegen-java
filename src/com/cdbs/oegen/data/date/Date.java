@@ -10,5 +10,5 @@ package com.cdbs.oegen.data.date;
  * @author toxn
  */
 public abstract class Date {
-
+    // Empty
 }

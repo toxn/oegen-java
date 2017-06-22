@@ -59,8 +59,8 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
      */
     static boolean isSavedToDisk = true;
 
-    private static final String CMD_ADD_PERSON = "ADD PERSON";
-    private static final String CMD_REMOVE_PERSON = "REMOVE PERSON";
+    private static final String CMD_ADD_PERSON = "ADD PERSON"; //$NON-NLS-1$
+    private static final String CMD_REMOVE_PERSON = "REMOVE PERSON"; //$NON-NLS-1$
 
     /**
      * The file where the data originate. receives normal save.
@@ -69,7 +69,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     private final JTable personTable;
 
-    private final CustomAction createPersonAction = new CustomAction("Person.Create") {
+    private final CustomAction createPersonAction = new CustomAction("Person.Create") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -111,7 +111,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 	}
     };
 
-    private final CustomAction personNextViewAction = new CustomAction("Person.View.Next") {
+    private final CustomAction personNextViewAction = new CustomAction("Person.View.Next") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -125,7 +125,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final CustomAction personPrevViewAction = new CustomAction("Person.View.Prev") {
+    private final CustomAction personPrevViewAction = new CustomAction("Person.View.Prev") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -141,7 +141,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     private JPanel personRelationsPanel;
 
-    private final CustomAction personRelationsPrintAction = new CustomAction("Person.Relations.Print") {
+    private final CustomAction personRelationsPrintAction = new CustomAction("Person.Relations.Print") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -165,7 +165,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final CustomAction personRelationsRotateLeftAction = new CustomAction("Person.Relations.Rotate.Left") {
+    private final CustomAction personRelationsRotateLeftAction = new CustomAction("Person.Relations.Rotate.Left") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -174,12 +174,12 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+	    // TODO To be implemented
 	}
 
     };
 
-    private final CustomAction personRelationsRotateRightAction = new CustomAction("Person.Relations.Rotate.Right") {
+    private final CustomAction personRelationsRotateRightAction = new CustomAction("Person.Relations.Rotate.Right") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -188,27 +188,12 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+	    // TODO To be implemented
 	}
 
     };
 
-    private final CustomAction personRelationsShowTextAction = new CustomAction("Person.Relations.Show.Text") {
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, getActionCommand());
-
-	}
-
-    };
-
-    private final CustomAction personRelationsShowTreeAction = new CustomAction("Person.Relations.Show.Tree") {
+    private final CustomAction personRelationsShowTextAction = new CustomAction("Person.Relations.Show.Text") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -223,7 +208,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final CustomAction personRelationsShowWheelAction = new CustomAction("Person.Relations.Show.Wheel") {
+    private final CustomAction personRelationsShowTreeAction = new CustomAction("Person.Relations.Show.Tree") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -238,7 +223,22 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final CustomAction personRelationsZoomInAction = new CustomAction("Person.Relations.Zoom.In") {
+    private final CustomAction personRelationsShowWheelAction = new CustomAction("Person.Relations.Show.Wheel") { //$NON-NLS-1$
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    ((CardLayout) personRelationsPanel.getLayout()).show(personRelationsPanel, getActionCommand());
+
+	}
+
+    };
+
+    private final CustomAction personRelationsZoomInAction = new CustomAction("Person.Relations.Zoom.In") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -263,7 +263,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final CustomAction personRelationsZoomOutAction = new CustomAction("Person.Relations.Zoom.Out") {
+    private final CustomAction personRelationsZoomOutAction = new CustomAction("Person.Relations.Zoom.Out") { //$NON-NLS-1$
 
 	/**
 	 *
@@ -307,7 +307,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     private final PersonTableModel personsTableModel = new PersonTableModel(Person.persons);
 
-    private final CustomAction removePersonsAction = new CustomAction("Person.Remove", CustomAction.FLAG_CONFIRM) {
+    private final CustomAction removePersonsAction = new CustomAction("Person.Remove", CustomAction.FLAG_CONFIRM) { //$NON-NLS-1$
 
 	/**
 	 *
@@ -354,7 +354,7 @@ public final class MainWindowSwing extends com.cdbs.oegen.ui.MainWindow implemen
 
     };
 
-    private final CustomAction searchPersonAction = new CustomAction("Person.Search") {
+    private final CustomAction searchPersonAction = new CustomAction("Person.Search") { //$NON-NLS-1$
 
 	/**
 	 *

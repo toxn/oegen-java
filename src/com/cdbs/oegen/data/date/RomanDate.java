@@ -7,16 +7,18 @@ package com.cdbs.oegen.data.date;
 
 import java.beans.PropertyChangeSupport;
 
+import com.cdbs.oegen.ui.Messages;
+
 /**
  *
  * @author toxn
  */
 public abstract class RomanDate extends SimpleDate {
-    public static final String PROP_DAY = "DAY";
+    public static final String PROP_DAY = "DAY"; //$NON-NLS-1$
 
-    public static final String PROP_MONTH = "MONTH";
+    public static final String PROP_MONTH = "MONTH"; //$NON-NLS-1$
 
-    public static final String PROP_YEAR = "YEAR";
+    public static final String PROP_YEAR = "YEAR"; //$NON-NLS-1$
     public static final int DAY_UNKNOWN = 0;
     public static final int MONTH_UNKNOWN = 0;
 
@@ -118,18 +120,18 @@ public abstract class RomanDate extends SimpleDate {
     public
     String toString() {
 
-	return String.format("%1ts%2$ts-%3$ts-%4$ts", getLetter(),
-		getYear() == YEAR_UNKNOWN ? "????" : Integer.toString(getYear()),
-			getMonth() == MONTH_UNKNOWN ? "??" : String.format("%1$2ts", getMonth()),
-				getDay() == DAY_UNKNOWN ? "??" : String.format("%1$2ts", getDay()));
+	return String.format("%1ts%2$ts-%3$ts-%4$ts", getLetter(), //$NON-NLS-1$
+		getYear() == YEAR_UNKNOWN ? "????" : Integer.toString(getYear()), //$NON-NLS-1$
+			getMonth() == MONTH_UNKNOWN ? "??" : String.format("%1$2ts", getMonth()), //$NON-NLS-1$ //$NON-NLS-2$
+				getDay() == DAY_UNKNOWN ? "??" : String.format("%1$2ts", getDay())); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void setDate(int day, int month, int year) throws Exception {
 	if (month > 12 || month < 0)
-	    throw new Exception("Illegal month value");
+	    throw new Exception(Messages.getString("RomanDate.IllegalMonthValue")); //$NON-NLS-1$
 
 	if (day > 31 || day < 0)
-	    throw new Exception("Illegal day value");
+	    throw new Exception(Messages.getString("RomanDate.IllegalDayValue")); //$NON-NLS-1$
 
 	switch (month) {
 	case MONTH_UNKNOWN:

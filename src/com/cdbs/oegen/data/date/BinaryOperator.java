@@ -5,6 +5,8 @@
  */
 package com.cdbs.oegen.data.date;
 
+import com.cdbs.oegen.ui.Messages;
+
 /**
  *
  * @author toxn
@@ -60,25 +62,25 @@ public class BinaryOperator {
 
     @Override
     public String toString() {
-	String result = "";
+	String result = ""; //$NON-NLS-1$
 
 	if (operator == Operator.Xor) {
-	    result += "either ";
+	    result += Messages.getString("BinaryOperator.XorEither"); //$NON-NLS-1$
 	}
 
 	result += date1.toString();
 
 	switch (operator) {
 	case And:
-	    result += " and ";
+	    result += Messages.getString("BinaryOperator.And"); //$NON-NLS-1$
 	    break;
 
 	case Or:
-	    result += " or ";
+	    result += Messages.getString("BinaryOperator.Or"); //$NON-NLS-1$
 	    break;
 
 	case Xor:
-	    result += " or ";
+	    result += Messages.getString("BinaryOperator.XorOr"); //$NON-NLS-1$
 	    break;
 	}
 

@@ -21,10 +21,10 @@ import com.cdbs.oegen.ui.PersonList;
 public class Person
 {
     public enum Gender {
-	Unknown(Messages.getString("Person.Gender.Unknown"), "?"), //$NON-NLS-2$
-	Male(Messages.getString("Person.Gender.Male"), "\u2642"), //$NON-NLS-2$
-	Female(Messages.getString("Person.Gender.Female"), "\u2640"), //$NON-NLS-2$
-	Other(Messages.getString("Person.Gender.Other"), "\u26A7"); //$NON-NLS-2$
+	Unknown(Messages.getString("Person.Gender.Unknown"), "?"), //$NON-NLS-1$//$NON-NLS-2$
+	Male(Messages.getString("Person.Gender.Male"), "\u2642"), //$NON-NLS-1$//$NON-NLS-2$
+	Female(Messages.getString("Person.Gender.Female"), "\u2640"), //$NON-NLS-1$//$NON-NLS-2$
+	Other(Messages.getString("Person.Gender.Other"), "\u26A7"); //$NON-NLS-1$//$NON-NLS-2$
 
 	private final String symbol;
 	private final String nlsName;
@@ -47,14 +47,15 @@ public class Person
 	    return nlsName;
 	}
     }
-    public static final String GENERATED_ID_PREFIX = "$";
+
+    public static final String GENERATED_ID_PREFIX = "$"; //$NON-NLS-1$
     public static PersonList persons = new PersonList();
 
 
     public static HashMap<String, Person> indexId = new HashMap<>();
 
-    public static final String PROPERTY_FATHER = "father";
-    public static final String PROPERTY_FIRSTNAME = "firstName";
+    public static final String PROPERTY_FATHER = "father"; //$NON-NLS-1$
+    public static final String PROPERTY_FIRSTNAME = "firstName"; //$NON-NLS-1$
 
     public static final String PROPERTY_GENDER = "gender"; //$NON-NLS-1$
 
@@ -80,7 +81,7 @@ public class Person
 
     private Gender gender = Gender.Unknown;
 
-    private String firstName = "";
+    private String firstName = ""; //$NON-NLS-1$
     private String lastName = ""; //$NON-NLS-1$
 
     private Person father;

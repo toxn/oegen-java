@@ -52,24 +52,24 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
      *
      */
     private static final long serialVersionUID = 1L;
-    
+
     @SuppressWarnings("unused")
     private static void changeField(HTMLDocument doc, String id, String newValue) {
 	try {
 	    // doc.setInnerHTML(doc.getElement(id), newValue);
 	    doc.setOuterHTML(doc.getElement(id),
-		    "<span class=\"" + id + "\" id=\"" + id + "\">" + newValue + "</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		    "<span class=\"" + id + "\" id=\"" + id + "\">" + newValue + "</span>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	} catch (BadLocationException e) {
-	    // TODO Bloc catch généré automatiquement
+	    // TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
 	    e.printStackTrace();
 	} catch (IOException e) {
-	    // TODO Bloc catch généré automatiquement
+	    // TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
 	    e.printStackTrace();
 	}
 
 	System.out.println(doc);
     }
-    
+
     private static String personListToHtmlList(PersonList children) {
 	String result = ""; //$NON-NLS-1$
 
@@ -82,30 +82,39 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 
 	return result;
     }
-    
+
     private static String personToHtml(Person person, boolean link) {
-	String result = "";
+	String result = ""; //$NON-NLS-1$
 
 	if (person == null)
 	    return result;
 
 	result += "<span class=\"" + Person.PROPERTY_GENDER + "\">" + person.getGender().getSymbol() //$NON-NLS-1$ //$NON-NLS-2$
 		+ "</span> " //$NON-NLS-1$
-		+ "<span class=\"" + Person.PROPERTY_LASTNAME + "\" id=\"" + Person.PROPERTY_LASTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$
+		+ "<span class=\"" + Person.PROPERTY_LASTNAME + "\" id=\"" + Person.PROPERTY_LASTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		+ person.getLastName() + "</span> " //$NON-NLS-1$
 		+ "<span class=\"" + Person.PROPERTY_FIRSTNAME + "\">" //$NON-NLS-1$//$NON-NLS-2$
-		+ person.getFirstName() + "</span>"; //$NON-NLS-1$
+		+ person.getFirstName() + "</span>" //$NON-NLS-1$
+		+ (person.getDateOfBirth() != null || person.getDateOfDeath() != null ? " (" : "")
+		+ "<span class=\"" + Person.PROPERTY_DATEOFBIRTH + "\">" //$NON-NLS-2$
+		+ (person.getDateOfBirth() != null
+		? "â—‹ " + person.getDateOfBirth().toString() + (person.getDateOfDeath() != null ? " " : "") : "") //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$
+		+ "</span>"
+		+ "<span class=\"" + Person.PROPERTY_DATEOFDEATH + "\">" //$NON-NLS-1$//$NON-NLS-2$
+		+ (person.getDateOfDeath() != null ? "â€  " + person.getDateOfDeath().toString() : "") //$NON-NLS-1$//$NON-NLS-2$
+		+ "</span>" //$NON-NLS-1$
+		+ (person.getDateOfBirth() != null || person.getDateOfDeath() != null ? ")" : "");
 
 	if(link)
 	{
-	    result = "<a href=\"" + person.getId() + "\">" //$NON-NLS-1$
+	    result = "<a href=\"" + person.getId() + "\">" //$NON-NLS-1$ //$NON-NLS-2$
 		    + result
 		    + "</a"; //$NON-NLS-1$
 	}
 
 	return result;
     }
-    
+
     private static String personToHtmlList(Person person) {
 	if (person == null)
 	    return ""; //$NON-NLS-1$
@@ -129,7 +138,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 	    + "       <span id=\"name\">" //$NON-NLS-1$
 	    + "         <span id=\"" + Person.PROPERTY_GENDER + "\">?</span> " //$NON-NLS-1$ //$NON-NLS-2$
 	    + "         <span class=\"" + Person.PROPERTY_LASTNAME + "\" id=\"" + Person.PROPERTY_LASTNAME //$NON-NLS-1$ //$NON-NLS-2$
-	    + "\">Last Name</span> "
+	    + "\">Last Name</span> " //$NON-NLS-1$
 	    + "         <span id=\"" + Person.PROPERTY_FIRSTNAME + "\">First Name</span>" //$NON-NLS-1$ //$NON-NLS-2$
 	    + "       </span>" //$NON-NLS-1$
 	    + "     </h1>" //$NON-NLS-1$
@@ -139,11 +148,11 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
     public PersonSummary() {
 	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 	textPane.setEditable(false);
-	textPane.setContentType("text/html");
+	textPane.setContentType("text/html"); //$NON-NLS-1$
 
 	// Create style sheet
 	((HTMLDocument) textPane.getDocument()).getStyleSheet()
-	.addRule("." + Person.PROPERTY_LASTNAME + " { font-variant: small-caps; }");
+	.addRule("." + Person.PROPERTY_LASTNAME + " { font-variant: small-caps; }"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	// Insert default text
 	textPane.setText(defaultText);
@@ -173,13 +182,13 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
     }
 
     private void firePersonClick(Person person) {
-        PersonClickEvent evt = new PersonClickEvent(this, person);
-        
-        // Process the listeners last to first, notifying
-        // those that are interested in this event
-        for(PersonClickListener pcl : listeners) {
-            pcl.personClick(evt);
-        }
+	PersonClickEvent evt = new PersonClickEvent(this, person);
+
+	// Process the listeners last to first, notifying
+	// those that are interested in this event
+	for(PersonClickListener pcl : listeners) {
+	    pcl.personClick(evt);
+	}
     }
 
     @Override
@@ -196,7 +205,7 @@ public class PersonSummary extends PersonRelationalComponent implements Hyperlin
 		+ "   <body>" //$NON-NLS-1$
 		+ "       <h1>" //$NON-NLS-1$
 		+ personToHtml(center, false)
-		+ "       </h1>"
+		+ "       </h1>" //$NON-NLS-1$
 		+ "     <ul>" //$NON-NLS-1$
 		+ "       <li>Parents" //$NON-NLS-1$
 		+ "         <ul>" //$NON-NLS-1$

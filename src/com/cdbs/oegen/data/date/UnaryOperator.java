@@ -5,6 +5,8 @@
  */
 package com.cdbs.oegen.data.date;
 
+import com.cdbs.oegen.ui.Messages;
+
 /**
  *
  * @author toxn
@@ -60,23 +62,23 @@ public class UnaryOperator extends ComplexDate {
 
     @Override
     public String toString() {
-	String result = "";
+	String result = ""; //$NON-NLS-1$
 
 	switch (operator) {
 	case Not:
-	    result += "not ";
+	    result += Messages.getString("UnaryOperator.Not"); //$NON-NLS-1$
 	    break;
 
 	case Before:
-	    result += "< ";
+	    result += "< "; //$NON-NLS-1$
 	    break;
 
 	case After:
-	    result += "> ";
+	    result += "> "; //$NON-NLS-1$
 	    break;
 
 	case Circa:
-	    result += "≈ ";
+	    result += "≈ "; //$NON-NLS-1$
 	    break;
 	}
 

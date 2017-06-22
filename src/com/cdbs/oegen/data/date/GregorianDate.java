@@ -17,7 +17,7 @@ public class GregorianDate extends RomanDate {
 
     @Override
     protected String getLetter() {
-	return "G";
+	return "G"; //$NON-NLS-1$
     }
 
     @Override

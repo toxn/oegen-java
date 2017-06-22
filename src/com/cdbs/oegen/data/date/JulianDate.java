@@ -17,7 +17,7 @@ public class JulianDate extends RomanDate {
 
     @Override
     protected String getLetter() {
-	return "J";
+	return "J"; //$NON-NLS-1$
     }
 
     @Override
@@ -42,48 +42,48 @@ public class JulianDate extends RomanDate {
 	switch (getMonth()) {
 	case 12:
 	    result += 30;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 11:
 	    result += 31;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 10:
 	    result += 30;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 9:
 	    result += 31;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 8:
 	    result += 30;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 7:
 	    result += 31;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 6:
 	    result += 31;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 5:
 	    result += 30;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 4:
 	    result += 31;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 3:
 	    result += isLeapYear(getYear()) ? 29 : 28;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 2:
 	    result += 31;
-	    // Fallthrough
 
+	    //$FALL-THROUGH$
 	case 1:
 	    result += getDay();
 	}
