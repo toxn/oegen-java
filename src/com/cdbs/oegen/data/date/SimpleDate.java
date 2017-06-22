@@ -10,11 +10,6 @@ package com.cdbs.oegen.data.date;
  * @author toxn
  */
 public abstract class SimpleDate extends Date {
-    public enum Precision {
-	Exact, Before, Circa, After
-    }
-
-    public Precision precision = Precision.Exact;
 
     abstract int toDaysFromZero() throws Exception;
 

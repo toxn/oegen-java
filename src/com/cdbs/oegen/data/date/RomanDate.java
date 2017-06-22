@@ -13,11 +13,11 @@ import java.beans.PropertyChangeSupport;
  */
 public abstract class RomanDate extends SimpleDate {
     public static final String PROP_DAY = "DAY";
+
     public static final String PROP_MONTH = "MONTH";
+
     public static final String PROP_YEAR = "YEAR";
-
     public static final int DAY_UNKNOWN = 0;
-
     public static final int MONTH_UNKNOWN = 0;
 
     public static final int YEAR_UNKNOWN = Integer.MIN_VALUE;
@@ -32,6 +32,27 @@ public abstract class RomanDate extends SimpleDate {
 
     public RomanDate(int day, int month, int year) throws Exception {
 	setDate(day, month, year);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	RomanDate other = (RomanDate) obj;
+	if (m_Day != other.m_Day)
+	    return false;
+	if (m_Month != other.m_Month)
+	    return false;
+	if (m_Year != other.m_Year)
+	    return false;
+	return true;
     }
 
     /**
@@ -53,6 +74,20 @@ public abstract class RomanDate extends SimpleDate {
      */
     public int getYear() {
 	return m_Year;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + getLetter().hashCode();
+	result = prime * result + m_Day;
+	result = prime * result + m_Month;
+	result = prime * result + m_Year;
+	return result;
     }
 
     /**
@@ -82,25 +117,8 @@ public abstract class RomanDate extends SimpleDate {
     @Override
     public
     String toString() {
-	String precision = "";
 
-	switch(this.precision) {
-	case Exact:
-	    precision = "";
-	    break;
-
-	case After:
-	    precision = "> ";
-	    break;
-
-	case Before:
-	    precision = "< ";
-
-	case Circa:
-	    precision = "≈ ";
-	}
-
-	return String.format("%1$ts%2ts%3$ts-%4$ts-%5$ts", precision, getLetter(),
+	return String.format("%1ts%2$ts-%3$ts-%4$ts", getLetter(),
 		getYear() == YEAR_UNKNOWN ? "????" : Integer.toString(getYear()),
 			getMonth() == MONTH_UNKNOWN ? "??" : String.format("%1$2ts", getMonth()),
 				getDay() == DAY_UNKNOWN ? "??" : String.format("%1$2ts", getDay()));
