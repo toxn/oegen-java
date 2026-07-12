@@ -5,7 +5,7 @@ import java.text.MessageFormat
 
 object FuzzyDateDisplay {
     fun format(date: FuzzyDate): String = when (date) {
-        is FuzzyDate.Text -> date.text
+        is FuzzyDate.Text -> appendCalendar(date.text, date.calendar)
         is FuzzyDate.Partial -> formatPartial(date)
         is FuzzyDate.Precise -> formatPrecise(date)
         is FuzzyDate.And -> date.operands.joinToString(Messages.getString("FuzzyDate.separator.and")) {
@@ -55,6 +55,8 @@ object FuzzyDateDisplay {
 
     private fun appendCalendar(text: String, calendar: CalendarSystem): String {
         if (calendar == CalendarSystem.GREGORIAN) return text
-        return "$text [${calendar.name}]"
+        val key = "FuzzyDate.calendar.${calendar.name}"
+        val label = runCatching { Messages.getString(key) }.getOrElse { calendar.name }
+        return "$text [$label]"
     }
 }

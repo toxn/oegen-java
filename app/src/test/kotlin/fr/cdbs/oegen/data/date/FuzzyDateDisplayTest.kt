@@ -14,5 +14,9 @@ class FuzzyDateDisplayTest {
             "18??",
             FuzzyDateDisplay.format(FuzzyDate.Partial(year = "18??")),
         )
+        assertEquals(
+            "12 frimaire an II [Republican]",
+            FuzzyDateDisplay.format(FuzzyDate.Text("12 frimaire an II", CalendarSystem.FRENCH_REPUBLICAN)),
+        )
     }
 }

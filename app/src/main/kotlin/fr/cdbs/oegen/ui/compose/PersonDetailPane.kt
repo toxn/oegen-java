@@ -106,7 +106,7 @@ private fun LifeEventFields(person: Person, kind: LifeEventKind) {
             label = { Text(Messages.getString("Person.LifeEvent.Date")) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            placeholder = { Text("1850-03-15") },
+            placeholder = { Text(Messages.getString("Person.LifeEvent.Date.Examples")) },
         )
         OutlinedTextField(
             value = placeFor(person, kind).orEmpty(),

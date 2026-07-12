@@ -2,11 +2,15 @@ package fr.cdbs.oegen.data.date
 
 object FuzzyDateParser {
     private val calendarSuffix = Regex("""\s*\[([A-Z_]+)]\s*$""", RegexOption.IGNORE_CASE)
-    private val isoPartial = Regex("""^[\d?]+-[\d?]+-[\d?]+$""")
+    private val isoPartial = Regex("""^([\d?]+)(?:-([\d?]+))?(?:-([\d?]+))?$""")
     private val isoPrecise = Regex("""^(\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$""")
-    private val slashPartial = Regex("""^[\d?]+/[\d?]+/[\d?]+$""")
+    private val slashPartial = Regex("""^([\d?]+)/([\d?]+)/([\d?]+)$""")
     private val slashPrecise = Regex("""^(\d{1,2})/(\d{1,2})/(\d{4})$""")
     private val yearOnlyPartial = Regex("""^(\d|\?)+$""")
+    private val frenchRepublicanDate = Regex(
+        """(?i)^(\d{1,2}\s+)?(?:vend[ée]miaire|brumaire|frimaire|niv[ôo]se|pluvi[ôo]se|vent[ôo]se|germinal|flor[ée]al|prairial|messidor|thermidor|fructidor)\b.*""",
+    )
+    private val frenchRepublicanYear = Regex("""(?i)^an\s+.+$""")
 
     fun parse(input: String, defaultCalendar: CalendarSystem = CalendarSystem.GREGORIAN): FuzzyDate {
         val trimmed = input.trim()
@@ -66,10 +70,20 @@ object FuzzyDateParser {
 
         if (rest.contains('?')) {
             isoPartial.matchEntire(rest)?.let { match ->
-                return FuzzyDate.Partial(match.groupValues[1], match.groupValues[2], match.groupValues[3], calendar)
+                return FuzzyDate.Partial(
+                    year = match.groupValues[1].takeIf { it.isNotEmpty() },
+                    month = match.groupValues.getOrNull(2)?.takeIf { it.isNotEmpty() },
+                    day = match.groupValues.getOrNull(3)?.takeIf { it.isNotEmpty() },
+                    calendar = calendar,
+                )
             }
             slashPartial.matchEntire(rest)?.let { match ->
-                return FuzzyDate.Partial(match.groupValues[3], match.groupValues[2], match.groupValues[1], calendar)
+                return FuzzyDate.Partial(
+                    year = match.groupValues[3].takeIf { it.isNotEmpty() },
+                    month = match.groupValues[2].takeIf { it.isNotEmpty() },
+                    day = match.groupValues[1].takeIf { it.isNotEmpty() },
+                    calendar = calendar,
+                )
             }
             if (yearOnlyPartial.matches(rest)) {
                 return FuzzyDate.Partial(year = rest, calendar = calendar)
@@ -100,7 +114,15 @@ object FuzzyDateParser {
             return FuzzyDate.Text(body, calendar)
         }
 
+        if (calendar == CalendarSystem.GREGORIAN && looksFrenchRepublican(rest)) {
+            return FuzzyDate.Text(rest, CalendarSystem.FRENCH_REPUBLICAN)
+        }
+
         return FuzzyDate.Text(body, calendar)
+    }
+
+    private fun looksFrenchRepublican(input: String): Boolean {
+        return frenchRepublicanDate.matches(input.trim()) || frenchRepublicanYear.matches(input.trim())
     }
 
     private fun extractCalendar(input: String, defaultCalendar: CalendarSystem): Pair<String, CalendarSystem> {
