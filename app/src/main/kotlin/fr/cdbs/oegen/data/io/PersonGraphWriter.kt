@@ -54,6 +54,8 @@ object PersonGraphWriter {
             marriagePlace = person.marriagePlace,
             deathPlace = person.deathPlace,
             funeralPlace = person.funeralPlace,
+            alternateNames = person.alternateNames.takeIf { it.isNotEmpty() }
+                ?.map(AlternateNameIo::toNode),
         )
         exportedPersons[person] = node
 

@@ -2,11 +2,17 @@ package fr.cdbs.oegen.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -20,8 +26,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import fr.cdbs.oegen.data.AlternateName
+import fr.cdbs.oegen.data.AlternateNameKind
 import fr.cdbs.oegen.data.Person
 import fr.cdbs.oegen.data.date.LifeEventKind
 import fr.cdbs.oegen.ui.Messages
@@ -90,6 +99,120 @@ fun PersonDetailPane(
         LifeEventKind.entries.forEach { kind ->
             LifeEventFields(person = person, kind = kind)
         }
+
+        HorizontalDivider()
+
+        AlternateNamesSection(person = person)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AlternateNamesSection(person: Person) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = Messages.getString("Person.AlternateNames.Title"),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        IconButton(onClick = {
+            person.alternateNames = person.alternateNames + AlternateName()
+        }) {
+            Icon(Icons.Default.Add, contentDescription = Messages.getString("Person.AlternateNames.Add"))
+        }
+    }
+
+    if (person.alternateNames.isEmpty()) {
+        Text(
+            text = Messages.getString("Person.AlternateNames.Empty"),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        return
+    }
+
+    person.alternateNames.forEachIndexed { index, alternate ->
+        AlternateNameEditor(
+            alternate = alternate,
+            onUpdate = { updated ->
+                person.alternateNames = person.alternateNames.toMutableList().also { it[index] = updated }
+            },
+            onRemove = {
+                person.alternateNames = person.alternateNames.filterIndexed { i, _ -> i != index }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AlternateNameEditor(
+    alternate: AlternateName,
+    onUpdate: (AlternateName) -> Unit,
+    onRemove: () -> Unit,
+) {
+    var kindExpanded by remember(alternate) { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = kindExpanded,
+                onExpandedChange = { kindExpanded = !kindExpanded },
+                modifier = Modifier.weight(1f),
+            ) {
+                OutlinedTextField(
+                    value = Messages.getString(alternate.kind.messageKey),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(Messages.getString("Person.AlternateNames.Kind")) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(kindExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
+                    expanded = kindExpanded,
+                    onDismissRequest = { kindExpanded = false },
+                ) {
+                    AlternateNameKind.entries.forEach { kind ->
+                        DropdownMenuItem(
+                            text = { Text(Messages.getString(kind.messageKey)) },
+                            onClick = {
+                                onUpdate(alternate.copy(kind = kind))
+                                kindExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+            IconButton(onClick = onRemove) {
+                Icon(Icons.Default.Delete, contentDescription = Messages.getString("Person.AlternateNames.Remove"))
+            }
+        }
+        OutlinedTextField(
+            value = alternate.firstName.orEmpty(),
+            onValueChange = { onUpdate(alternate.copy(firstName = it)) },
+            label = { Text(Messages.getString("Person.firstName")) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+        OutlinedTextField(
+            value = alternate.lastName.orEmpty(),
+            onValueChange = { onUpdate(alternate.copy(lastName = it)) },
+            label = { Text(Messages.getString("Person.lastName")) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
     }
 }
 

@@ -37,5 +37,8 @@ object IoConstants {
     const val PERSON_MARRIAGE_PLACE = "marriagePlace"
     const val PERSON_DEATH_PLACE = "deathPlace"
     const val PERSON_FUNERAL_PLACE = "funeralPlace"
+
+    const val PERSON_ALTERNATE_NAME = "alternateName"
+    const val PERSON_ALTERNATE_KIND = "kind"
 }
 

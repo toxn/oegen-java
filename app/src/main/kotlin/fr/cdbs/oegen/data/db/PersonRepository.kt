@@ -57,7 +57,9 @@ class PersonRepository(private val connection: Connection) {
                 ps.setString(2, person.firstName)
                 ps.setString(3, person.lastName)
                 ps.setString(4, person.gender?.name)
-                ps.setString(5, PersonExtraJson.encode(person.lifeEvents))
+                ps.setString(5, PersonExtraJson.encode(
+                    PersonExtraJson.PersonExtra(person.lifeEvents, person.alternateNames),
+                ))
                 ps.addBatch()
             }
             ps.executeBatch()

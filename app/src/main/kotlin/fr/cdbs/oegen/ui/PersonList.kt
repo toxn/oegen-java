@@ -76,10 +76,14 @@ fun PersonList.searchByName(query: String): List<Person> {
         val first = person.firstName.orEmpty()
         val last = person.lastName.orEmpty()
         val fullName = "$first $last $last $first"
+        val alternateNames = person.alternateNames.joinToString(" ") { name ->
+            "${name.firstName.orEmpty()} ${name.lastName.orEmpty()}"
+        }
         tokens.all { token ->
             first.contains(token, ignoreCase = true) ||
                 last.contains(token, ignoreCase = true) ||
-                fullName.contains(token, ignoreCase = true)
+                fullName.contains(token, ignoreCase = true) ||
+                alternateNames.contains(token, ignoreCase = true)
         }
     }
 }

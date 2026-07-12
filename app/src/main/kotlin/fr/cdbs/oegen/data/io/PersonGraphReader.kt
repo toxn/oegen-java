@@ -33,6 +33,10 @@ object PersonGraphReader {
         node.deathPlace?.let { person.deathPlace = it }
         node.funeralPlace?.let { person.funeralPlace = it }
 
+        node.alternateNames.orEmpty().forEach { alternate ->
+            person.alternateNames = person.alternateNames + AlternateNameIo.fromNode(alternate)
+        }
+
         node.nestedPersons.orEmpty().forEach { nested ->
             val related = importPerson(nested)
             when (nested.relation) {

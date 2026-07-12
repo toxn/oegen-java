@@ -213,6 +213,18 @@ private fun PersonRelationsText(
             }
         }
 
+        if (person.alternateNames.isNotEmpty()) {
+            RelationSection(Messages.getString("Person.AlternateNames.Title")) {
+                person.alternateNames.forEach { alternate ->
+                    Text(
+                        text = "• ${alternate.displayLabel()}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 2.dp),
+                    )
+                }
+            }
+        }
+
         RelationSection(Messages.getString("Person.Relations.Parents")) {
             person.father?.let { RelationLine(it, onPersonClick) }
             person.mother?.let { RelationLine(it, onPersonClick) }

@@ -70,6 +70,10 @@ data class PersonNode(
     @get:JsonProperty(IoConstants.PERSON_FUNERAL_PLACE)
     @get:JacksonXmlProperty(localName = IoConstants.PERSON_FUNERAL_PLACE, namespace = IoConstants.DB_NAMESPACE)
     val funeralPlace: String? = null,
+    @get:JsonProperty("alternateNames")
+    @get:JacksonXmlElementWrapper(useWrapping = false)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_ALTERNATE_NAME, namespace = IoConstants.DB_NAMESPACE)
+    val alternateNames: List<AlternateNameNode>? = null,
     @get:JsonProperty("nestedPersons")
     @get:JacksonXmlElementWrapper(useWrapping = false)
     @get:JacksonXmlProperty(localName = IoConstants.PERSON_NAME, namespace = IoConstants.DB_NAMESPACE)
@@ -104,4 +108,17 @@ data class PersonRefNode(
     @get:JsonProperty(IoConstants.LISTOF_ATTR_OF)
     @get:JacksonXmlProperty(isAttribute = true, localName = IoConstants.LISTOF_ATTR_OF)
     val of: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class AlternateNameNode(
+    @get:JsonProperty(IoConstants.PERSON_ALTERNATE_KIND)
+    @get:JacksonXmlProperty(isAttribute = true, localName = IoConstants.PERSON_ALTERNATE_KIND)
+    val kind: String? = null,
+    @get:JsonProperty(IoConstants.PERSON_FIRSTNAME)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_FIRSTNAME, namespace = IoConstants.DB_NAMESPACE)
+    val firstName: String? = null,
+    @get:JsonProperty(IoConstants.PERSON_LASTNAME)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_LASTNAME, namespace = IoConstants.DB_NAMESPACE)
+    val lastName: String? = null,
 )

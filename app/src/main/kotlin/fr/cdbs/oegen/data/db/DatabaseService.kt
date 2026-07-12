@@ -40,7 +40,9 @@ object DatabaseService {
                 person.gender = row.gender?.let { name ->
                     Person.Gender.entries.firstOrNull { g -> g.name == name }
                 } ?: Person.Gender.Unknown
-                person.lifeEvents = PersonExtraJson.decode(row.extraJson)
+                val extra = PersonExtraJson.decode(row.extraJson)
+                person.lifeEvents = extra.lifeEvents
+                person.alternateNames = extra.alternateNames
                 byId[row.id] = person
             }
             for (row in rows) {

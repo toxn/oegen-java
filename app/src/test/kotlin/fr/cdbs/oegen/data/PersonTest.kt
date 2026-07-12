@@ -1,5 +1,7 @@
 package fr.cdbs.oegen.data
 
+import fr.cdbs.oegen.data.AlternateName
+import fr.cdbs.oegen.data.AlternateNameKind
 import fr.cdbs.oegen.ui.PersonList
 import fr.cdbs.oegen.ui.PersonSortOrder
 import fr.cdbs.oegen.ui.searchByName
@@ -58,6 +60,18 @@ class PersonTest {
         val matches = Person.persons.searchByName("Jean Dupont")
         assertEquals(1, matches.size)
         assertEquals(jean, matches[0])
+    }
+
+    @Test
+    fun searchByNameMatchesAlternateNames() {
+        Person().apply {
+            firstName = "Marie"
+            lastName = "Dupont"
+            alternateNames = listOf(AlternateName(lastName = "Martin", kind = AlternateNameKind.MAIDEN))
+        }
+
+        val matches = Person.persons.searchByName("Martin")
+        assertEquals(1, matches.size)
     }
 
     @Test

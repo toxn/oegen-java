@@ -141,6 +141,14 @@ class Person {
             persons.stateChanged(ChangeEvent(this))
         }
 
+    var alternateNames: List<AlternateName> = emptyList()
+        set(newValue) {
+            val oldValue = field
+            field = newValue
+            pcs.firePropertyChange(PROPERTY_ALTERNATE_NAMES, oldValue, newValue)
+            persons.stateChanged(ChangeEvent(this))
+        }
+
     var birthDate: FuzzyDate?
         get() = lifeEvents.birth
         set(value) = setLifeEventDate(LifeEventKind.BIRTH, value)
@@ -264,6 +272,8 @@ class Person {
         const val PROPERTY_ID: String = "id" //$NON-NLS-1$
 
         const val PROPERTY_LIFE_EVENTS: String = "lifeEvents" //$NON-NLS-1$
+
+        const val PROPERTY_ALTERNATE_NAMES: String = "alternateNames" //$NON-NLS-1$
 
 
         const val CLASSNAME: String = "person" //$NON-NLS-1$
