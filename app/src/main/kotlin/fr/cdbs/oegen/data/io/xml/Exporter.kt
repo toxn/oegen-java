@@ -36,7 +36,7 @@ class Exporter(outputStream: OutputStream?) : Exporter(outputStream) {
                 continue
             }
 
-            db.appendChild(exportPerson(p!!, null))
+            db.appendChild(exportPerson(p, null))
         }
 
         val transformerFactory = TransformerFactory.newInstance()
@@ -123,7 +123,7 @@ class Exporter(outputStream: OutputStream?) : Exporter(outputStream) {
                 if (!isComplete && person.children.size() > (if (person.children.contains(source)) 2 else 1)) {
                     for (child in person.children) {
                         if (child != source) {
-                            val childElement = exportPerson(child!!, person)
+                            val childElement = exportPerson(child, person)
                             childElement.setAttribute(XmlIOContext.Companion.PERSON_ATTR_RELATION, XmlIOContext.Companion.P2PRELTYPE_CHILD)
                             personElement.appendChild(childElement)
                         }
