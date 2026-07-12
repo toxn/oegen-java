@@ -3,8 +3,11 @@
 
 [versions]
 guava = "33.3.1-jre"
+jackson = "2.18.3"
 junit-jupiter-engine = "5.11.3"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jackson-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }

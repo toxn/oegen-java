@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oegendb xmlns="fr.cdbs.oegen" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="fr.cdbs.oegen oegen-kiss.xsd">
+    <person>
+        <firstName>Jean</firstName>
+        <lastName>Dupont</lastName>
+        <gender>Male</gender>
+        <list of="child">
+            <person>
+                <firstName>Marie</firstName>
+                <lastName>Dupont</lastName>
+                <gender>Female</gender>
+            </person>
+        </list>
+    </person>
+</oegendb>
