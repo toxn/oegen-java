@@ -40,6 +40,7 @@ object DatabaseService {
                 person.gender = row.gender?.let { name ->
                     Person.Gender.entries.firstOrNull { g -> g.name == name }
                 } ?: Person.Gender.Unknown
+                person.lifeEvents = PersonExtraJson.decode(row.extraJson)
                 byId[row.id] = person
             }
             for (row in rows) {

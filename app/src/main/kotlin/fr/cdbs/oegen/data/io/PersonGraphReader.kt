@@ -27,6 +27,12 @@ object PersonGraphReader {
         node.death?.let { person.deathDate = it }
         node.funeral?.let { person.funeralDate = it }
 
+        node.birthPlace?.let { person.birthPlace = it }
+        node.baptismPlace?.let { person.baptismPlace = it }
+        node.marriagePlace?.let { person.marriagePlace = it }
+        node.deathPlace?.let { person.deathPlace = it }
+        node.funeralPlace?.let { person.funeralPlace = it }
+
         node.nestedPersons.orEmpty().forEach { nested ->
             val related = importPerson(nested)
             when (nested.relation) {

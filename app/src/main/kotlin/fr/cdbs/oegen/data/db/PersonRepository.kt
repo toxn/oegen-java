@@ -1,6 +1,7 @@
 package fr.cdbs.oegen.data.db
 
 import fr.cdbs.oegen.data.Person
+import fr.cdbs.oegen.data.db.PersonExtraJson
 import java.sql.Connection
 
 class PersonRepository(private val connection: Connection) {
@@ -47,7 +48,7 @@ class PersonRepository(private val connection: Connection) {
         connection.prepareStatement(
             """
             INSERT INTO persons (id, first_name, last_name, gender, father_id, mother_id, extra_json)
-            VALUES (?, ?, ?, ?, NULL, NULL, NULL)
+            VALUES (?, ?, ?, ?, NULL, NULL, ?)
             """.trimIndent(),
         ).use { ps ->
             for (person in persons) {
@@ -56,6 +57,7 @@ class PersonRepository(private val connection: Connection) {
                 ps.setString(2, person.firstName)
                 ps.setString(3, person.lastName)
                 ps.setString(4, person.gender?.name)
+                ps.setString(5, PersonExtraJson.encode(person.lifeEvents))
                 ps.addBatch()
             }
             ps.executeBatch()

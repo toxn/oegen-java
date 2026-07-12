@@ -55,6 +55,21 @@ data class PersonNode(
     @get:JsonProperty(IoConstants.PERSON_FUNERAL)
     @get:JacksonXmlProperty(localName = IoConstants.PERSON_FUNERAL, namespace = IoConstants.DB_NAMESPACE)
     val funeral: FuzzyDate? = null,
+    @get:JsonProperty(IoConstants.PERSON_BIRTH_PLACE)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_BIRTH_PLACE, namespace = IoConstants.DB_NAMESPACE)
+    val birthPlace: String? = null,
+    @get:JsonProperty(IoConstants.PERSON_BAPTISM_PLACE)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_BAPTISM_PLACE, namespace = IoConstants.DB_NAMESPACE)
+    val baptismPlace: String? = null,
+    @get:JsonProperty(IoConstants.PERSON_MARRIAGE_PLACE)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_MARRIAGE_PLACE, namespace = IoConstants.DB_NAMESPACE)
+    val marriagePlace: String? = null,
+    @get:JsonProperty(IoConstants.PERSON_DEATH_PLACE)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_DEATH_PLACE, namespace = IoConstants.DB_NAMESPACE)
+    val deathPlace: String? = null,
+    @get:JsonProperty(IoConstants.PERSON_FUNERAL_PLACE)
+    @get:JacksonXmlProperty(localName = IoConstants.PERSON_FUNERAL_PLACE, namespace = IoConstants.DB_NAMESPACE)
+    val funeralPlace: String? = null,
     @get:JsonProperty("nestedPersons")
     @get:JacksonXmlElementWrapper(useWrapping = false)
     @get:JacksonXmlProperty(localName = IoConstants.PERSON_NAME, namespace = IoConstants.DB_NAMESPACE)

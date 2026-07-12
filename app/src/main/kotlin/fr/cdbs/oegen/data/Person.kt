@@ -161,9 +161,35 @@ class Person {
         get() = lifeEvents.funeral
         set(value) = setLifeEventDate(LifeEventKind.FUNERAL, value)
 
+    var birthPlace: String?
+        get() = lifeEvents.birthPlace
+        set(value) = setLifeEventPlace(LifeEventKind.BIRTH, value)
+
+    var baptismPlace: String?
+        get() = lifeEvents.baptismPlace
+        set(value) = setLifeEventPlace(LifeEventKind.BAPTISM, value)
+
+    var marriagePlace: String?
+        get() = lifeEvents.marriagePlace
+        set(value) = setLifeEventPlace(LifeEventKind.MARRIAGE, value)
+
+    var deathPlace: String?
+        get() = lifeEvents.deathPlace
+        set(value) = setLifeEventPlace(LifeEventKind.DEATH, value)
+
+    var funeralPlace: String?
+        get() = lifeEvents.funeralPlace
+        set(value) = setLifeEventPlace(LifeEventKind.FUNERAL, value)
+
     private fun setLifeEventDate(kind: LifeEventKind, value: FuzzyDate?) {
         val events = lifeEvents.copy()
         events.set(kind, value)
+        lifeEvents = events
+    }
+
+    private fun setLifeEventPlace(kind: LifeEventKind, value: String?) {
+        val events = lifeEvents.copy()
+        events.setPlace(kind, value)
         lifeEvents = events
     }
 

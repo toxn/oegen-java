@@ -49,6 +49,11 @@ object PersonGraphWriter {
             marriage = person.marriageDate,
             death = person.deathDate,
             funeral = person.funeralDate,
+            birthPlace = person.birthPlace,
+            baptismPlace = person.baptismPlace,
+            marriagePlace = person.marriagePlace,
+            deathPlace = person.deathPlace,
+            funeralPlace = person.funeralPlace,
         )
         exportedPersons[person] = node
 

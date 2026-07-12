@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -61,6 +62,12 @@ fun PersonTreeCanvas(
 
     val horizontalScroll = rememberScrollState()
     val verticalScroll = rememberScrollState()
+
+    LaunchedEffect(center, layout) {
+        val centerBox = layout.boxes.find { it.person === center } ?: return@LaunchedEffect
+        horizontalScroll.scrollTo((centerBox.left - layout.width / 4f).toInt().coerceAtLeast(0))
+        verticalScroll.scrollTo((centerBox.top - layout.height / 4f).toInt().coerceAtLeast(0))
+    }
 
     Box(
         modifier = modifier

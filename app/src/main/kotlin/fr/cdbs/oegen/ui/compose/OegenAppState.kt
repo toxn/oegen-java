@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import fr.cdbs.oegen.data.Person
 import fr.cdbs.oegen.data.db.DatabaseService
+import fr.cdbs.oegen.ui.PersonSortOrder
 import fr.cdbs.oegen.ui.searchByName
+import fr.cdbs.oegen.ui.sortedByPersonOrder
 import fr.cdbs.oegen.ui.toList
 import java.io.File
 import javax.swing.event.ListDataEvent
@@ -17,6 +19,7 @@ class OegenAppState {
         private set
 
     var searchQuery by mutableStateOf("")
+    var sortOrder by mutableStateOf(PersonSortOrder.LAST_FIRST)
     var isDirty by mutableStateOf(false)
     /** Last XML file used for import or export (interchange); primary store is the database. */
     var saveFile by mutableStateOf<File?>(null)
@@ -51,11 +54,12 @@ class OegenAppState {
     fun filteredPersons(): List<Person> {
         listRevision // observe list changes
         val query = searchQuery.trim()
-        return if (query.isEmpty()) {
+        val base = if (query.isEmpty()) {
             Person.persons.toList()
         } else {
             Person.persons.searchByName(query)
         }
+        return base.sortedByPersonOrder(sortOrder)
     }
 
     fun markSaved(file: File? = saveFile) {

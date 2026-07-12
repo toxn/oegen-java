@@ -11,6 +11,7 @@ import java.io.FileOutputStream
 import javax.swing.JFileChooser
 import javax.swing.JOptionPane
 import javax.swing.filechooser.FileNameExtensionFilter
+import fr.cdbs.oegen.ui.Messages
 
 object DatabaseActions {
     private val fileChooser = JFileChooser().apply {
@@ -59,14 +60,14 @@ object DatabaseActions {
 
     fun confirmDiscardChanges(state: OegenAppState): Boolean {
         val options = arrayOf(
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DialogOption.Continue"),
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DialogOption.SaveFirst"),
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DialogOption.Cancel"),
+            Messages.getString("DialogOption.Continue"),
+            Messages.getString("DialogOption.SaveFirst"),
+            Messages.getString("DialogOption.Cancel"),
         )
         val result = JOptionPane.showOptionDialog(
             null,
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DataLostWarning.Message"),
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DataLostWarning.Title"),
+            Messages.getString("DataLostWarning.Message"),
+            Messages.getString("DataLostWarning.Title"),
             JOptionPane.DEFAULT_OPTION,
             JOptionPane.WARNING_MESSAGE,
             null,
@@ -84,14 +85,14 @@ object DatabaseActions {
         if (!state.isDirty) return true
 
         val options = arrayOf(
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DialogOption.Continue"),
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DialogOption.SaveFirst"),
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DialogOption.Cancel"),
+            Messages.getString("DialogOption.Continue"),
+            Messages.getString("DialogOption.SaveFirst"),
+            Messages.getString("DialogOption.Cancel"),
         )
         val result = JOptionPane.showOptionDialog(
             null,
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DataLostWarning.Message"),
-            fr.cdbs.oegen.ui.Messages.getString("MainWindowSwing.DataLostWarning.Title"),
+            Messages.getString("DataLostWarning.Message"),
+            Messages.getString("DataLostWarning.Title"),
             JOptionPane.DEFAULT_OPTION,
             JOptionPane.WARNING_MESSAGE,
             null,

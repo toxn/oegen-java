@@ -30,6 +30,7 @@ class PersonLifeEventsTest {
             firstName = "Jean"
             lastName = "Dupont"
             birthDate = FuzzyDate.Text("spring 1840")
+            birthPlace = "Paris"
         }
 
         val exported = ByteArrayOutputStream()
@@ -40,5 +41,13 @@ class PersonLifeEventsTest {
 
         val restored = Person.persons.single()
         assertEquals(FuzzyDate.Text("spring 1840"), restored.birthDate)
+        assertEquals("Paris", restored.birthPlace)
+    }
+
+    @Test
+    fun birthPlacePropertyUpdatesLifeEvents() {
+        val person = Person()
+        person.birthPlace = "Lyon"
+        assertEquals("Lyon", person.lifeEvents.birthPlace)
     }
 }

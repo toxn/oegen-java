@@ -31,5 +31,11 @@ object IoConstants {
     const val PERSON_MARRIAGE = "marriage"
     const val PERSON_DEATH = "death"
     const val PERSON_FUNERAL = "funeral"
+
+    const val PERSON_BIRTH_PLACE = "birthPlace"
+    const val PERSON_BAPTISM_PLACE = "baptismPlace"
+    const val PERSON_MARRIAGE_PLACE = "marriagePlace"
+    const val PERSON_DEATH_PLACE = "deathPlace"
+    const val PERSON_FUNERAL_PLACE = "funeralPlace"
 }
 

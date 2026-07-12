@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.cdbs.oegen.data.Person
 import fr.cdbs.oegen.ui.Messages
+import fr.cdbs.oegen.ui.PersonSortOrder
 
 @Composable
 fun PersonListPane(
@@ -61,6 +63,22 @@ fun PersonListPane(
             ) {
                 Icon(Icons.Default.Delete, contentDescription = Messages.getString("Action.Person.Remove.Name"))
             }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            FilterChip(
+                selected = state.sortOrder == PersonSortOrder.LAST_FIRST,
+                onClick = { state.sortOrder = PersonSortOrder.LAST_FIRST },
+                label = { Text(Messages.getString("Person.List.Sort.LastFirst")) },
+            )
+            FilterChip(
+                selected = state.sortOrder == PersonSortOrder.FIRST_LAST,
+                onClick = { state.sortOrder = PersonSortOrder.FIRST_LAST },
+                label = { Text(Messages.getString("Person.List.Sort.FirstLast")) },
+            )
         }
 
         HorizontalDivider()

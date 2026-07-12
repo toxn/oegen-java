@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -29,7 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import fr.cdbs.oegen.data.Person
+import fr.cdbs.oegen.data.PersonSummaryBuilder
+import fr.cdbs.oegen.data.date.FuzzyDateDisplay
+import fr.cdbs.oegen.data.date.LifeEventKind
 import fr.cdbs.oegen.ui.Messages
+import fr.cdbs.oegen.ui.print.PrintActions
 
 private enum class RelationsViewMode {
     Text,
@@ -44,31 +49,47 @@ fun PersonRelationsPane(
     modifier: Modifier = Modifier,
 ) {
     var viewMode by rememberSaveable { mutableStateOf(RelationsViewMode.Text) }
-    var generations by rememberSaveable { mutableIntStateOf(4) }
+    var treeGenerations by rememberSaveable { mutableIntStateOf(4) }
+    var summaryGenerations by rememberSaveable { mutableIntStateOf(3) }
 
     Column(modifier = modifier.fillMaxHeight()) {
         RelationsToolbar(
             viewMode = viewMode,
             onViewModeChange = { viewMode = it },
-            generations = generations,
+            generations = if (viewMode == RelationsViewMode.Tree) treeGenerations else summaryGenerations,
             onZoomIn = {
-                if (generations > 1) {
-                    generations--
+                if (viewMode == RelationsViewMode.Tree) {
+                    if (treeGenerations > 1) treeGenerations--
+                } else if (summaryGenerations > 1) {
+                    summaryGenerations--
                 }
             },
-            onZoomOut = { generations++ },
-            showZoom = viewMode == RelationsViewMode.Tree,
+            onZoomOut = {
+                if (viewMode == RelationsViewMode.Tree) {
+                    treeGenerations++
+                } else {
+                    summaryGenerations++
+                }
+            },
+            onPrint = {
+                when (viewMode) {
+                    RelationsViewMode.Tree -> PrintActions.printTree(person, treeGenerations)
+                    RelationsViewMode.Text -> PrintActions.printSummary(person, summaryGenerations)
+                }
+            },
+            printEnabled = person != null,
         )
 
         when (viewMode) {
             RelationsViewMode.Text -> PersonRelationsText(
                 person = person,
+                summaryGenerations = summaryGenerations,
                 onPersonClick = onPersonClick,
                 modifier = Modifier.fillMaxSize(),
             )
             RelationsViewMode.Tree -> PersonTreeCanvas(
                 center = person,
-                generations = generations,
+                generations = treeGenerations,
                 personsRevision = personsRevision,
                 onPersonClick = onPersonClick,
                 modifier = Modifier.fillMaxSize(),
@@ -84,7 +105,8 @@ private fun RelationsToolbar(
     generations: Int,
     onZoomIn: () -> Unit,
     onZoomOut: () -> Unit,
-    showZoom: Boolean,
+    onPrint: () -> Unit,
+    printEnabled: Boolean,
 ) {
     Row(
         modifier = Modifier
@@ -104,29 +126,33 @@ private fun RelationsToolbar(
             label = { Text(Messages.getString("Action.Person.Relations.Show.Tree.Name")) },
         )
 
-        if (showZoom) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(onClick = onZoomIn, enabled = generations > 1) {
-                    Icon(
-                        Icons.Default.Remove,
-                        contentDescription = Messages.getString("Action.Person.Relations.Zoom.In.Name"),
-                    )
-                }
-                Text(
-                    text = generations.toString(),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(horizontal = 4.dp),
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(onClick = onZoomIn, enabled = generations > 1) {
+                Icon(
+                    Icons.Default.Remove,
+                    contentDescription = Messages.getString("Action.Person.Relations.Zoom.In.Name"),
                 )
-                IconButton(onClick = onZoomOut) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = Messages.getString("Action.Person.Relations.Zoom.Out.Name"),
-                    )
-                }
+            }
+            Text(
+                text = generations.toString(),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
+            IconButton(onClick = onZoomOut) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = Messages.getString("Action.Person.Relations.Zoom.Out.Name"),
+                )
+            }
+            IconButton(onClick = onPrint, enabled = printEnabled) {
+                Icon(
+                    Icons.Default.Print,
+                    contentDescription = Messages.getString("Action.Person.Relations.Print.Name"),
+                )
             }
         }
     }
@@ -135,6 +161,7 @@ private fun RelationsToolbar(
 @Composable
 private fun PersonRelationsText(
     person: Person?,
+    summaryGenerations: Int,
     onPersonClick: (Person) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -145,7 +172,7 @@ private fun PersonRelationsText(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = Messages.getString("Person.Relations.Title"),
+            text = Messages.getString("Person.Summary.Title"),
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -164,9 +191,39 @@ private fun PersonRelationsText(
             fontWeight = FontWeight.SemiBold,
         )
 
+        val lifeEvents = LifeEventKind.entries.mapNotNull { kind ->
+            val date = person.lifeEvents.get(kind)
+            val place = person.lifeEvents.getPlace(kind)
+            if (date == null && place.isNullOrBlank()) return@mapNotNull null
+            Triple(kind, date?.let { FuzzyDateDisplay.format(it) }, place)
+        }
+        if (lifeEvents.isNotEmpty()) {
+            RelationSection(Messages.getString("Person.Summary.LifeEvents")) {
+                lifeEvents.forEach { (kind, date, place) ->
+                    val details = buildList {
+                        date?.let { add(it) }
+                        place?.takeIf { it.isNotBlank() }?.let { add(it) }
+                    }.joinToString(" — ")
+                    Text(
+                        text = "• ${Messages.getString(kind.messageKey)}: $details",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 2.dp),
+                    )
+                }
+            }
+        }
+
         RelationSection(Messages.getString("Person.Relations.Parents")) {
             person.father?.let { RelationLine(it, onPersonClick) }
             person.mother?.let { RelationLine(it, onPersonClick) }
+        }
+
+        PersonSummaryBuilder.ancestorGenerations(person, summaryGenerations).forEachIndexed { index, generation ->
+            RelationSection(Messages.getString("Person.Summary.AncestorsGeneration", index + 1)) {
+                generation.forEach { ancestor ->
+                    RelationLine(ancestor, onPersonClick)
+                }
+            }
         }
 
         RelationSection(Messages.getString("Person.Relations.Siblings")) {
@@ -175,9 +232,28 @@ private fun PersonRelationsText(
             }
         }
 
-        RelationSection(Messages.getString("Person.children")) {
-            person.children.forEach { child ->
-                RelationLine(child!!, onPersonClick)
+        val marriages = PersonSummaryBuilder.marriageGroups(person)
+        if (marriages.isNotEmpty()) {
+            RelationSection(Messages.getString("Person.Summary.Marriages")) {
+                marriages.forEach { group ->
+                    val spouseLabel = group.spouse?.let { formatPersonHeading(it) }
+                        ?: Messages.getString("Person.Summary.UnknownSpouse")
+                    Text(
+                        text = "• $spouseLabel",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 2.dp),
+                    )
+                    group.children.forEach { child ->
+                        RelationLine(child, onPersonClick, indent = 16.dp)
+                    }
+                }
+            }
+        } else {
+            RelationSection(Messages.getString("Person.children")) {
+                person.children.filterNotNull().forEach { child ->
+                    RelationLine(child, onPersonClick)
+                }
             }
         }
     }
@@ -192,7 +268,11 @@ private fun RelationSection(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun RelationLine(person: Person, onPersonClick: (Person) -> Unit) {
+private fun RelationLine(
+    person: Person,
+    onPersonClick: (Person) -> Unit,
+    indent: androidx.compose.ui.unit.Dp = 8.dp,
+) {
     Text(
         text = "• ${formatPersonHeading(person)}",
         style = MaterialTheme.typography.bodyLarge,
@@ -200,7 +280,7 @@ private fun RelationLine(person: Person, onPersonClick: (Person) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onPersonClick(person) }
-            .padding(start = 8.dp, bottom = 2.dp),
+            .padding(start = indent, bottom = 2.dp),
     )
 }
 
