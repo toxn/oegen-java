@@ -1,5 +1,6 @@
 package fr.cdbs.oegen.ui
 
+import java.text.MessageFormat
 import java.util.*
 
 object Messages {
@@ -14,5 +15,10 @@ object Messages {
         } catch (e: MissingResourceException) {
             return '!'.toString() + key + '!'
         }
+    }
+
+    @JvmStatic
+    fun getString(key: String, vararg args: Any?): String {
+        return MessageFormat.format(getString(key), *args)
     }
 }

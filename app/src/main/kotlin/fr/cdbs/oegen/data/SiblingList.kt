@@ -51,18 +51,26 @@ class SiblingList(private val person: Person) : PersonList(), ListDataListener {
         val father = person.father
         val mother = person.mother
 
-        father?.children?.addListDataListener(this)
-        for (p in father?.children!!) if (p !in this && p != person) {
-            addElement(p)
-        }
-
-        if (mother != null) {
-            mother.children.addListDataListener(this)
-            for (p in mother.children) if (p !in this && p != person) {
-                addElement(p)
+        father?.children?.let { children ->
+            children.addListDataListener(this)
+            for (p in children) {
+                if (p !in this && p != person) {
+                    addElement(p)
+                }
             }
         }
 
-        fireIntervalAdded(this, 0, size - 1)
+        mother?.children?.let { children ->
+            children.addListDataListener(this)
+            for (p in children) {
+                if (p !in this && p != person) {
+                    addElement(p)
+                }
+            }
+        }
+
+        if (size > 0) {
+            fireIntervalAdded(this, 0, size - 1)
+        }
     }
 }

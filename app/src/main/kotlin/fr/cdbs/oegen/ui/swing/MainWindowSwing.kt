@@ -1,8 +1,9 @@
 package fr.cdbs.oegen.ui.swing
 
 import fr.cdbs.oegen.data.Person
-import fr.cdbs.oegen.data.io.xml.Exporter
-import fr.cdbs.oegen.data.io.xml.Importer
+import fr.cdbs.oegen.data.io.DatabaseFileFormat
+import fr.cdbs.oegen.data.io.createExporter
+import fr.cdbs.oegen.data.io.createImporter
 import fr.cdbs.oegen.ui.MainWindow
 import fr.cdbs.oegen.ui.Messages
 import fr.cdbs.oegen.ui.PersonTableModel
@@ -25,6 +26,7 @@ import javax.swing.Box
 import javax.swing.ButtonGroup
 import javax.swing.JButton
 import javax.swing.JFileChooser
+import javax.swing.filechooser.FileFilter
 import javax.swing.JFrame
 import javax.swing.JMenu
 import javax.swing.JMenuBar
@@ -65,7 +67,7 @@ class MainWindowSwing : JFrame(), MainWindow, PersonClickListener {
     private val newAction = object : CustomAction("New") {
         override fun actionPerformed(e: ActionEvent) {
             if (hasRequest()) {
-                Person.persons.clear()
+                Person.clearAll()
             }
         }
     }
@@ -185,7 +187,7 @@ class MainWindowSwing : JFrame(), MainWindow, PersonClickListener {
 
     private val searchPersonAction = object : CustomAction("Person.Search") {
         override fun actionPerformed(e: ActionEvent) {
-            // Not implemented
+            PersonSearch.showAndSelect(this@MainWindowSwing)?.let { jumpTo(it) }
         }
     }
 
@@ -333,10 +335,10 @@ class MainWindowSwing : JFrame(), MainWindow, PersonClickListener {
 
         when (fileChooser.showOpenDialog(this@MainWindowSwing)) {
             JFileChooser.APPROVE_OPTION -> {
-                Person.persons.clear()
+                Person.clearAll()
                 try {
                     FileInputStream(fileChooser.selectedFile).use { fis ->
-                        Importer(fis).doImport()
+                        createImporter(fis, DatabaseFileFormat.fromFile(fileChooser.selectedFile)).doImport()
                         saveFile = fileChooser.selectedFile
                     }
                 } catch (e1: FileNotFoundException) {
@@ -370,7 +372,7 @@ class MainWindowSwing : JFrame(), MainWindow, PersonClickListener {
 
         try {
             FileOutputStream(saveFile).use { fos ->
-                Exporter(fos).doExport()
+                createExporter(fos, DatabaseFileFormat.fromFile(saveFile!!)).doExport()
             }
             isSavedToDisk = true
         } catch (e1: FileNotFoundException) {
@@ -443,7 +445,17 @@ class MainWindowSwing : JFrame(), MainWindow, PersonClickListener {
     }
 
     companion object {
-        val fileChooser: JFileChooser = JFileChooser()
+        val fileChooser: JFileChooser = JFileChooser().apply {
+            fileFilter = object : FileFilter() {
+                override fun accept(file: File): Boolean {
+                    if (file.isDirectory) return true
+                    return DatabaseFileFormat.fromFileName(file.name) != null
+                }
+
+                override fun getDescription(): String =
+                    Messages.getString("DatabaseFileFilter.description")
+            }
+        }
         var isSavedToDisk: Boolean = true
         var saveFile: File? = null
     }

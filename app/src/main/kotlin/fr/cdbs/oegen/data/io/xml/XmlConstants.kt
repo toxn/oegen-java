@@ -1,28 +1,25 @@
 package fr.cdbs.oegen.data.io.xml
 
-import fr.cdbs.oegen.data.Person
+import fr.cdbs.oegen.data.io.IoConstants
 
+/** XML-specific aliases; shared relation and element names live in [IoConstants]. */
 object XmlConstants {
-    const val DB_NAME = "oegendb"
-    const val DB_NAMESPACE = "fr.cdbs.oegen"
-    const val W3C_INSTANCE_NS = "http://www.w3.org/2001/XMLSchema-instance"
-    const val SCHEMA_LOCATION = "fr.cdbs.oegen oegen-kiss.xsd"
-
-    const val PERSON_NAME = Person.CLASSNAME
-    const val PERSON_ATTR_RELATION = "relation"
-    const val PERSON_FIRSTNAME = Person.PROPERTY_FIRSTNAME
-    const val PERSON_LASTNAME = Person.PROPERTY_LASTNAME
-    const val PERSON_GENDER = Person.PROPERTY_GENDER
-    const val PERSON_ID = Person.PROPERTY_ID
-
-    const val PERSONREF_NAME = "personRef"
-    const val PERSONREF_ATTR_REF = "ref"
-
-    const val LISTOF_NAME = "list"
-    const val LISTOF_ATTR_OF = "of"
-
-    const val P2PRELTYPE_CHILD = Person.TAG_CHILD
-    const val P2PRELTYPE_FATHER = Person.PROPERTY_FATHER
-    const val P2PRELTYPE_MOTHER = Person.PROPERTY_MOTHER
-    const val P2PRELTYPE_PARENT = "parent"
+    const val DB_NAME = IoConstants.DB_NAME
+    const val DB_NAMESPACE = IoConstants.DB_NAMESPACE
+    const val W3C_INSTANCE_NS = IoConstants.W3C_INSTANCE_NS
+    const val SCHEMA_LOCATION = IoConstants.SCHEMA_LOCATION
+    const val PERSON_NAME = IoConstants.PERSON_NAME
+    const val PERSON_ATTR_RELATION = IoConstants.PERSON_ATTR_RELATION
+    const val PERSON_FIRSTNAME = IoConstants.PERSON_FIRSTNAME
+    const val PERSON_LASTNAME = IoConstants.PERSON_LASTNAME
+    const val PERSON_GENDER = IoConstants.PERSON_GENDER
+    const val PERSON_ID = IoConstants.PERSON_ID
+    const val PERSONREF_NAME = IoConstants.PERSONREF_NAME
+    const val PERSONREF_ATTR_REF = IoConstants.PERSONREF_ATTR_REF
+    const val LISTOF_NAME = IoConstants.LISTOF_NAME
+    const val LISTOF_ATTR_OF = IoConstants.LISTOF_ATTR_OF
+    const val P2PRELTYPE_CHILD = IoConstants.P2PRELTYPE_CHILD
+    const val P2PRELTYPE_FATHER = IoConstants.P2PRELTYPE_FATHER
+    const val P2PRELTYPE_MOTHER = IoConstants.P2PRELTYPE_MOTHER
+    const val P2PRELTYPE_PARENT = IoConstants.P2PRELTYPE_PARENT
 }

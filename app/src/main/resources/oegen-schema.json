@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fr.cdbs.oegen/oegen-schema.json",
+  "title": "Œgen database document",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaLocation": { "type": "string" },
+    "persons": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/person" }
+    }
+  },
+  "required": ["persons"],
+  "$defs": {
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "relation": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Unknown", "Other"] },
+        "nestedPersons": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/person" }
+        },
+        "lists": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/relationList" }
+        },
+        "personRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/personRef" }
+        }
+      }
+    },
+    "relationList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["of"],
+      "properties": {
+        "of": { "type": "string" },
+        "persons": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/person" }
+        },
+        "personRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/personRef" }
+        }
+      }
+    },
+    "personRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref"],
+      "properties": {
+        "ref": { "type": "string", "minLength": 1 },
+        "of": { "type": "string" }
+      }
+    }
+  }
+}

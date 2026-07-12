@@ -1,5 +1,7 @@
 package fr.cdbs.oegen.data
 
+import fr.cdbs.oegen.data.date.FuzzyDate
+import fr.cdbs.oegen.data.date.LifeEventKind
 import fr.cdbs.oegen.ui.Messages
 import fr.cdbs.oegen.ui.PersonList
 import java.beans.PropertyChangeListener
@@ -130,6 +132,41 @@ class Person {
         id = null
     }
 
+
+    var lifeEvents: PersonLifeEvents = PersonLifeEvents()
+        set(newValue) {
+            val oldValue = field
+            field = newValue
+            pcs.firePropertyChange(PROPERTY_LIFE_EVENTS, oldValue, newValue)
+            persons.stateChanged(ChangeEvent(this))
+        }
+
+    var birthDate: FuzzyDate?
+        get() = lifeEvents.birth
+        set(value) = setLifeEventDate(LifeEventKind.BIRTH, value)
+
+    var baptismDate: FuzzyDate?
+        get() = lifeEvents.baptism
+        set(value) = setLifeEventDate(LifeEventKind.BAPTISM, value)
+
+    var marriageDate: FuzzyDate?
+        get() = lifeEvents.marriage
+        set(value) = setLifeEventDate(LifeEventKind.MARRIAGE, value)
+
+    var deathDate: FuzzyDate?
+        get() = lifeEvents.death
+        set(value) = setLifeEventDate(LifeEventKind.DEATH, value)
+
+    var funeralDate: FuzzyDate?
+        get() = lifeEvents.funeral
+        set(value) = setLifeEventDate(LifeEventKind.FUNERAL, value)
+
+    private fun setLifeEventDate(kind: LifeEventKind, value: FuzzyDate?) {
+        val events = lifeEvents.copy()
+        events.set(kind, value)
+        lifeEvents = events
+    }
+
     fun addPropertyChangeListener(listener: PropertyChangeListener?) {
         pcs.addPropertyChangeListener(listener)
     }
@@ -200,10 +237,19 @@ class Person {
 
         const val PROPERTY_ID: String = "id" //$NON-NLS-1$
 
+        const val PROPERTY_LIFE_EVENTS: String = "lifeEvents" //$NON-NLS-1$
+
+
         const val CLASSNAME: String = "person" //$NON-NLS-1$
 
         const val PROPERTY_CHILDREN: String = "children" //$NON-NLS-1$
 
         const val TAG_CHILD: String = "child" //$NON-NLS-1$
+
+        @JvmStatic
+        fun clearAll() {
+            persons.clear()
+            indexId.clear()
+        }
     }
 }

@@ -8,6 +8,7 @@
 /nbproject/private/
 /build/
 /dist/
+app/bin/
 /nbproject/
 
 # Ignore Gradle project-specific cache directory

@@ -51,10 +51,8 @@ open class PersonList
     }
 
     fun search(id: String?): Person? {
-        // FIXME: in dire need of a hashmap
-        for (p in this) if (p.id == id) return p
-
-        return null
+        if (id.isNullOrEmpty()) return null
+        return Person.indexId[id]
     }
 
     override fun stateChanged(arg0: ChangeEvent) {
@@ -65,5 +63,17 @@ open class PersonList
         for (ldl in listenerList.getListeners(ListDataListener::class.java)) {
             ldl.contentsChanged(ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, changedIndex, changedIndex))
         }
+    }
+}
+
+fun PersonList.toList(): List<Person> = (0 until size).map { getElementAt(it)!! }
+
+fun PersonList.searchByName(query: String): List<Person> {
+    val needle = query.trim()
+    if (needle.isEmpty()) return toList()
+
+    return filter { person ->
+        person.firstName?.contains(needle, ignoreCase = true) == true ||
+            person.lastName?.contains(needle, ignoreCase = true) == true
     }
 }

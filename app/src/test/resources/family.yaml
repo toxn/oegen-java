@@ -1,0 +1,10 @@
+persons:
+  - firstName: Jean
+    lastName: Dupont
+    gender: Male
+    lists:
+      - of: child
+        persons:
+          - firstName: Marie
+            lastName: Dupont
+            gender: Female
